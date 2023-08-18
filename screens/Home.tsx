@@ -1,46 +1,126 @@
 import React, { useState } from 'react';
-import { Button, TextInput, Text} from 'react-native-paper';
-import { View, StyleSheet } from 'react-native';
+import {Card, Button, TextInput, Text} from 'react-native-paper';
+import { View, StyleSheet,KeyboardAvoidingView, Platform } from 'react-native';
 import { textAlign } from '@mui/system';
+import {useRoute} from '@react-navigation/native'
+import { Searchbar } from 'react-native-paper';
+import { Padding } from '@mui/icons-material';
+import { Icon } from '@mui/material';
 
 const Home = (props) => {
-  const [email, setEmail] = useState(""); 
-
+  const route=useRoute();
+  const {name}=route.params;
+  const [searchQuery,setSearchQuery]=useState('');
+  const onChangeSearch=(query)=>{setSearchQuery(query)};
   return (
-      <View style={styles.container}>
-      <Text style={styles.welcome} variant="displaySmall">Welcome to Home Screen</Text>
+      <KeyboardAvoidingView style={styles.container}>
+      
+      <Searchbar
 
-    
-    </View>
+        placeholder="Search"
+        onChangeText={onChangeSearch}
+        value={searchQuery}
+        style={styles.searchbar}
+      />
+
+        <View style={styles.hello}>
+      <Text style={styles.welcome} variant="displaySmall">Hello</Text>
+      <Text variant="displaySmall" style={{fontWeight:'bold',}}>{name}</Text>
+      </View>
+      <Text variant='titleMedium' style={{fontWeight:'bold',marginBottom:350}}>Find your job</Text>
+      
+
+      <Card style={styles.card1}>
+        <Card.Content>
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center'}}>44.8K</Text>
+          <Text variant='titleSmall' style={{textAlign:'center'}}>Remote Jobs</Text>
+        </Card.Content>
+        </Card>
+        <Card style={styles.card2}>
+        <Card.Content>
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center'}}>66.8K</Text>
+          <Text variant='titleSmall' style={{textAlign:'center'}}>Full Time</Text>
+        </Card.Content>
+        </Card>
+
+        <Card style={styles.card3}>
+        <Card.Content>
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center'}}>38.9K</Text>
+          <Text variant='titleSmall' style={{textAlign:'center'}}>Part Time</Text>
+        </Card.Content>
+        </Card>
+
+      
+
+
+      <Text variant='headlineMedium' style={styles.recent} >Recent Job List</Text>
+      <Card style={styles.card4}>
+        <Card.Content>
+          <Text variant='titleLarge' >Product Designer</Text>
+          <Text variant='bodyMedium'>$10K-$12K/month</Text>
+          <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1")}>Apply Now</Button>
+        </Card.Content>
+      </Card>
+      
+    </KeyboardAvoidingView>
   );
 };
 const styles=StyleSheet.create({
   container:{
     flex:1,
-    justifyContent:'center',
+    // justifyContent:'center',
     paddingHorizontal:20,
     backgroundColor:'white' ,
   },
-  textBox1:{
-    paddingBottom: 10,
-    marginBottom: 20,
+  welcome:{
+    paddingBottom:5,
   },
-  textBox2:{
+  hello:{
+    flex:1,
+    marginTop:100,
+    
+  },
+  searchbar:{
+    marginTop:40,
+    marginRight:60,
+    marginLeft:20,
+  },
+  apply:{
+    marginLeft:220,
+    
+  },
+  card1:{
+    position:'absolute',
+    paddingTop:50,
+    paddingBottom:100,
+    left:20,
+    bottom:295,
+    width:'45%',
+  },
+  card2:{
+    position:'absolute',
+    left:220,
+    bottom:425,
+    paddingTop:10,
     paddingBottom:10,
+    width:'50%',
+
+  },
+  card3:{
+    position:'absolute',
+    left:220,
+    bottom:300,
+    paddingTop:10,
+    paddingBottom:10,
+    width:'50%',
+  },
+  card4:{
     marginBottom:20,
   },
-  welcome:{
-    paddingBottom:60,
+  recent:{
     fontWeight:'bold',
+    marginBottom:20,
   },
-  login:{
-    paddingBottom:20,
-    
-  },
-  forgot:{
-    marginLeft:260,
-    marginTop:10,
-    
-  }
+
 })
 export default Home;

@@ -6,7 +6,9 @@ import Login from './Login';
 import ForgotPassword from './ForgotPassword';
 import SignUp from './SignUp';
 import Home from './Home';
-
+import Desc1 from './Desc1';
+import Form1 from './Form1';
+import Home2 from './Home2';
 const Stack = createStackNavigator();
 
 function App() {
@@ -17,6 +19,9 @@ function App() {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{headerShown:false}} />
         <Stack.Screen name="SignUp" component={SignUp} options={{headerShown:false}} />
         <Stack.Screen name="Home" component={Home} options={{headerShown:false}} />
+        <Stack.Screen name="Desc1" component={Desc1} options={{headerShown:false}} />
+        <Stack.Screen name="Form1" component={Form1} options={{headerShown:false}} />
+        <Stack.Screen name="Home2" component={Home2} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

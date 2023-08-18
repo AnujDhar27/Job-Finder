@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Button, TextInput, Text} from 'react-native-paper';
+import { Button, TextInput, Text, SegmentedButtons} from 'react-native-paper';
 import   '@react-navigation/native'
 import { View, StyleSheet,TouchableOpacity } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
 
 const Login = (props) => {
-
+  const [name,setName]=useState("");
   const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("")
+  const [value,setValue]=useState('emp')
   const handleSingIn=()=>{
     auth()
     .signInWithEmailAndPassword(email,password)
@@ -17,7 +18,8 @@ const Login = (props) => {
       console.log('Login successful',user.email);
       setEmail("");
       setPassword("");
-      props.navigation.navigate("Home");
+      setName("");
+      props.navigation.navigate(value==='emp'?"Home":"Home2",{name});
     })
     .catch(error=>{
       if(error.code === 'auth/invalid-email') {
@@ -29,6 +31,31 @@ const Login = (props) => {
       <View style={styles.container}>
       <Text style={styles.welcome} variant="displaySmall">Welcome to Job Finder</Text>
       <Text style={styles.login} variant="headlineMedium">Login</Text>
+      <SegmentedButtons
+      style={{paddingBottom:20}}
+        value={value}
+        onValueChange={setValue}
+        buttons={[
+
+          {
+            value: 'emp',
+            label: 'Employee',
+          },
+          {
+            value: 'recruit',
+            label: 'Recruiter',
+          },
+        ]}
+      />
+
+      <TextInput
+      mode= 'outlined'
+      style={styles.textBox1}
+        placeholder="Enter Name"
+        label="Name"
+        value={name}
+        onChangeText={text => setName(text)}
+      />
       <TextInput
       mode= 'outlined'
       style={styles.textBox1}
@@ -47,7 +74,7 @@ const Login = (props) => {
         onChangeText={text => setPassword(text)}
       />
       <Button onPress={()=>props.navigation.navigate("ForgotPassword")} style={styles.forgot}><Text variant='titleSmall'>Forgot your <Text style={{color:'#6750a4'}}>password</Text>?</Text></Button>
-      <Button mode="contained" onPress={handleSingIn}>
+      <Button rippleColor="#FF000020" mode="contained" onPress={handleSingIn}>
         Login
       </Button>
       <Button onPress={()=>props.navigation.navigate("SignUp")} style={{marginTop:20}}><Text style={{textAlign:'center',paddingTop:20}} variant='titleSmall'>Don't have an account? <Text style={{color:'#6750a4'}}>Sign Up</Text></Text></Button>
@@ -75,6 +102,7 @@ const styles=StyleSheet.create({
   },
   login:{
     paddingBottom:20,
+    textAlign:'center',
     
   },
   forgot:{
