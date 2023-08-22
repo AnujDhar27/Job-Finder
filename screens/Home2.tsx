@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
-import {Card, Button, TextInput, Text,FAB} from 'react-native-paper';
+import {Card, Button, TextInput, Text,FAB,Menu,Divider,PaperProvider} from 'react-native-paper';
 import { View, StyleSheet,KeyboardAvoidingView, Platform } from 'react-native';
 import { textAlign } from '@mui/system';
-import {useRoute} from '@react-navigation/native'
+import {useNavigation, useRoute} from '@react-navigation/native'
 import { Searchbar } from 'react-native-paper';
 import { Padding } from '@mui/icons-material';
-import { Icon } from '@mui/material';
+import { Icon, Paper } from '@mui/material';
 import { ScrollView } from 'react-native-gesture-handler';
+import { DrawerActions } from '@react-navigation/native';
+import  openDrawer from '@react-navigation/drawer';
 
-const Home2 = (props) => {
+const Home2Screen = (props) => {
   const route=useRoute();
+  const navigation=useNavigation();  
   const {name}=route.params;
   const [searchQuery,setSearchQuery]=useState('');
   const onChangeSearch=(query)=>{setSearchQuery(query)};
   return (
     <KeyboardAvoidingView style={styles.container}>
+      
     <ScrollView>
+       <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20}} onPress={()=>props.navigation.navigate('Draw1')}></Button> 
       <Searchbar
 
         placeholder="Search"
@@ -67,6 +72,7 @@ const Home2 = (props) => {
           <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1")}>Check Details</Button>
         </Card.Content>
       </Card>
+      
       </ScrollView>
 
     <FAB
@@ -74,6 +80,7 @@ const Home2 = (props) => {
       style={styles.fab}
       onPress={()=>props.navigation.navigate('PostForm')}
       />
+
     </KeyboardAvoidingView>
 
   );
@@ -94,9 +101,11 @@ const styles=StyleSheet.create({
     
   },
   searchbar:{
-    marginTop:40,
-    marginRight:60,
-    marginLeft:40,
+    marginTop:10,
+    marginRight:30,
+    marginLeft:50,
+    
+    
   },
   apply:{
     marginLeft:220,
@@ -104,6 +113,7 @@ const styles=StyleSheet.create({
   },
   card4:{
     marginBottom:20,
+    
   },
   recent:{
     fontWeight:'bold',
@@ -116,4 +126,4 @@ const styles=StyleSheet.create({
   }
 
 })
-export default Home2;
+export default Home2Screen;

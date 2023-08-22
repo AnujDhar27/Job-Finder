@@ -9,9 +9,21 @@ import Home from './Home';
 import Desc1 from './Desc1';
 import Form1 from './Form1';
 import PostForm from './PostForm';
-import Home2 from './Home2';
+import Home2Screen from './Home2';
+import DrawerScreen from './LeftDrawer';
+import Applications from './Applications'
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const Stack = createStackNavigator();
+const Drawer=createDrawerNavigator();
+
+function Draw(){
+  return(
+    <Drawer.Navigator initialRouteName='Home2'>
+      <Drawer.Screen name='Draw1' component={DrawerScreen} options={{headerShown:false}}/>
+    </Drawer.Navigator>
+  )
+}
 function App() {
   return (
     <NavigationContainer>
@@ -23,7 +35,9 @@ function App() {
         <Stack.Screen name="Desc1" component={Desc1} options={{headerShown:false}} />
         <Stack.Screen name="Form1" component={Form1} options={{headerShown:false}} />
         <Stack.Screen name="PostForm" component={PostForm} options={{headerShown:false}} />
-        <Stack.Screen name="Home2" component={Home2} options={{headerShown:false}} />
+        <Stack.Screen name="Home2" component={Home2Screen} options={{headerShown:false}} />
+        <Stack.Screen name="Draw1" component={Draw} options={{headerShown:false}}/>
+        <Stack.Screen name="Applications" component={Applications} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
