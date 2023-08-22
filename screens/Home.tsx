@@ -6,6 +6,7 @@ import {useRoute} from '@react-navigation/native'
 import { Searchbar } from 'react-native-paper';
 import { Padding } from '@mui/icons-material';
 import { Icon } from '@mui/material';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Home = (props) => {
   const route=useRoute();
@@ -13,21 +14,20 @@ const Home = (props) => {
   const [searchQuery,setSearchQuery]=useState('');
   const onChangeSearch=(query)=>{setSearchQuery(query)};
   return (
+
       <KeyboardAvoidingView style={styles.container}>
-      
-      <Searchbar
-
-        placeholder="Search"
-        onChangeText={onChangeSearch}
-        value={searchQuery}
-        style={styles.searchbar}
-      />
-
+              <Searchbar
+              placeholder="Search"
+              onChangeText={onChangeSearch}
+              value={searchQuery}
+              style={styles.searchbar}
+/>
+      <ScrollView>
         <View style={styles.hello}>
       <Text style={styles.welcome} variant="displaySmall">Hello</Text>
       <Text variant="displaySmall" style={{fontWeight:'bold',}}>{name}</Text>
       </View>
-      <Text variant='titleMedium' style={{fontWeight:'bold',marginBottom:350}}>Find your job</Text>
+      <Text variant='titleMedium' style={{fontWeight:'bold',paddingTop:20,marginBottom:320}}>Find your job</Text>
       
 
       <Card style={styles.card1}>
@@ -56,12 +56,21 @@ const Home = (props) => {
       <Text variant='headlineMedium' style={styles.recent} >Recent Job List</Text>
       <Card style={styles.card4}>
         <Card.Content>
+         
+          <Text variant='titleLarge' >Product Designer</Text>
+          <Text variant='bodyMedium'>$10K-$12K/month</Text>
+          <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1")}>Apply Now</Button>
+        </Card.Content>
+      </Card>
+      <Card style={styles.card4}>
+        <Card.Content>
           <Text variant='titleLarge' >Product Designer</Text>
           <Text variant='bodyMedium'>$10K-$12K/month</Text>
           <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1")}>Apply Now</Button>
         </Card.Content>
       </Card>
       
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -77,7 +86,7 @@ const styles=StyleSheet.create({
   },
   hello:{
     flex:1,
-    marginTop:100,
+    marginTop:50,
     
   },
   searchbar:{
@@ -93,14 +102,14 @@ const styles=StyleSheet.create({
     position:'absolute',
     paddingTop:50,
     paddingBottom:100,
-    left:20,
-    bottom:295,
+   
+    bottom:400,
     width:'45%',
   },
   card2:{
     position:'absolute',
-    left:220,
-    bottom:425,
+    left:190,
+    bottom:525,
     paddingTop:10,
     paddingBottom:10,
     width:'50%',
@@ -108,8 +117,8 @@ const styles=StyleSheet.create({
   },
   card3:{
     position:'absolute',
-    left:220,
-    bottom:300,
+    left:190,
+    bottom:400,
     paddingTop:10,
     paddingBottom:10,
     width:'50%',

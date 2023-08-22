@@ -1,19 +1,66 @@
 import React, { useState } from 'react';
 import { Button, TextInput, Text} from 'react-native-paper';
-import { View, StyleSheet,KeyboardAvoidingView } from 'react-native';
+import { ScrollView, StyleSheet,KeyboardAvoidingView } from 'react-native';
 import { textAlign } from '@mui/system';
-import {Alert} from 'react-native'
-import {Formik} from 'formik'
-const Form1 = (props) => {
+import {Alert} from 'react-native';
+import {Formik} from 'formik';
+import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app'
 
+const Form1 = (props) => {
+  const db=firestore()
+  
+  const handleSubmit=async(values)=>{
+    try{
+      const user=firebase.auth().currentUser;
+      if(user)
+      {
+        const userData={
+          uid:user.uid,
+          name:values.name,
+          currOrg:values.currOrg,
+          emailID:values.emailID,
+          cinfo:values.cinfo,
+          currSal:values.currSal,
+          expSal:values.expSal,
+          yoe:values.yoe,
+          message:values.message,
+        };
+        const userDocRef=db.collection('users').doc(user.uid);
+        await userDocRef.set(userData);
+        Alert.alert('Success','Form data submitted')
+
+      }
+      else
+      {
+        Alert.alert('Error','User not logged in');
+      }
+    }
+    catch(error)
+    {
+      console.error('Error submitting form data:',error);
+      Alert.alert('Error','An error occured while submitting data');
+    }
+  };
   return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
       <Text style={styles.welcome} variant="displaySmall">Job Application Form</Text>
       <Formik
-      initialValues={{currSal:'',expSal:'',yoe:'',message:''}}
-      onSubmit={values=>console.log(values)}
+      initialValues={{name:'',currOrg:'',emailID:'',cinfo:'',currSal:'',expSal:'',yoe:'',message:''}}
+      onSubmit={
+        handleSubmit
+        //values=>console.log(values)
+      }
       validate={values=>{
         const errors={};
+        if(!values.name)
+        errors.name="*Name required";
+        if(!values.currOrg)
+        errors.currOrg="*Current Organization required";
+        if(!values.emailID)
+        errors.emailID="*Email ID required";
+        if(!values.cinfo)
+        errors.cinfo="*Contact Information required";
         if(!values.currSal)
         errors.currSal="*Current Salary required";
         if(!values.expSal)
@@ -27,6 +74,52 @@ const Form1 = (props) => {
       >
         {({handleChange,handleBlur,handleSubmit,values,errors,touched})=> (
             <KeyboardAvoidingView>
+              <TextInput
+                mode='outlined'
+                label='Name'
+                name="name"
+                placeholder="Enter your name"
+                onChangeText={handleChange('name')}
+                onBlur={handleBlur('name')}
+                value={values.name}
+                style={styles.textBox1}
+            />
+            {errors.name&& touched.name && <Text style={styles.errorMessage}>{errors.name}</Text>}
+             <TextInput
+                mode='outlined'
+                label='Current Organization'
+                name="currOrg"
+                placeholder="Enter the name of your current organization"
+                onChangeText={handleChange('currOrg')}
+                onBlur={handleBlur('currOrg')}
+                value={values.currOrg}
+                style={styles.textBox1}
+            />
+            {errors.currOrg && touched.currOrg && <Text style={styles.errorMessage}>{errors.currOrg}</Text>}
+             <TextInput
+                mode='outlined'
+                label='Email ID'
+                name="emailID"
+                placeholder="Enter your Email ID"
+                keyboardType='email-address'
+                onChangeText={handleChange('emailID')}
+                onBlur={handleBlur('emailID')}
+                value={values.emailID}
+                style={styles.textBox1}
+            />
+            {errors.emailID && touched.emailID && <Text style={styles.errorMessage}>{errors.emailID}</Text>}
+                <TextInput
+                mode='outlined'
+                label='Contact Information'
+                name="cinfo"
+                placeholder="Enter your contact number"
+                keyboardType='numeric'
+                onChangeText={handleChange('cinfo')}
+                onBlur={handleBlur('cinfo')}
+                value={values.cinfo}
+                style={styles.textBox1}
+            />
+            {errors.cinfo && touched.cinfo && <Text style={styles.errorMessage}>{errors.cinfo}</Text>}
                 <TextInput
                 mode='outlined'
                 label='Current Salary'
@@ -77,20 +170,20 @@ const Form1 = (props) => {
                 style={{paddingBottom:70,marginBottom:20}}
         />
         {errors.message && touched.message && <Text style={styles.errorMessage}>{errors.message}</Text>}
-        <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0}>
+        <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0} style={{marginBottom:20}}>
             Submit
         </Button>
             </KeyboardAvoidingView>
         )}
       </Formik>
       
-    </View>
+    </ScrollView>
   );
 };
 const styles=StyleSheet.create({
   container:{
     flex:1,
-    justifyContent:'center',
+    //justifyContent:'center',
     paddingHorizontal:20,
     backgroundColor:'white' ,
   },
@@ -100,7 +193,9 @@ const styles=StyleSheet.create({
   },
 
   welcome:{
-    paddingBottom:60,
+    paddingTop:40,
+    textAlign:'center',
+    paddingBottom:30,
     fontWeight:'bold',
   },
   login:{

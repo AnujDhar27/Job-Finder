@@ -9,7 +9,7 @@ const Desc1 = (props) => {
 
   return (
       <ScrollView style={styles.container}>
-
+        
         <Text variant='headlineLarge' style={{textAlign:'center',padding:50,paddingLeft:50}} > Apple </Text>
         <Image style={{width:230,position:'absolute',bottom:450,left:80}} source={require('../src/logo1.png')} resizeMode='contain'/>
       <Text variant='headlineSmall' style={{textAlign:'center', marginTop:150,fontWeight:'bold'}}>Product Designer</Text>
