@@ -26,6 +26,7 @@
     "@react-navigation/stack": "^6.3.17",
     "firebase": "^10.2.0",
     "formik": "^2.4.3",
+    "hamburger-react": "^2.5.0",
     "react": "18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-native": "0.72.3",

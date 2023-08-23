@@ -2,25 +2,24 @@ import React, { useState } from 'react';
 import {Card, Button, TextInput, Text,FAB,Menu,Divider,PaperProvider} from 'react-native-paper';
 import { View, StyleSheet,KeyboardAvoidingView, Platform } from 'react-native';
 import { textAlign } from '@mui/system';
-import {useNavigation, useRoute} from '@react-navigation/native'
+import {useNavigation, useRoute,DrawerActions} from '@react-navigation/native'
 import { Searchbar } from 'react-native-paper';
 import { Padding } from '@mui/icons-material';
 import { Icon, Paper } from '@mui/material';
 import { ScrollView } from 'react-native-gesture-handler';
-import { DrawerActions } from '@react-navigation/native';
-import  openDrawer from '@react-navigation/drawer';
+
 
 const Home2Screen = (props) => {
   const route=useRoute();
   const navigation=useNavigation();  
-  const {name}=route.params;
+  //  const {name}=route.params;
   const [searchQuery,setSearchQuery]=useState('');
   const onChangeSearch=(query)=>{setSearchQuery(query)};
   return (
     <KeyboardAvoidingView style={styles.container}>
       
     <ScrollView>
-       <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20}} onPress={()=>props.navigation.navigate('Draw1')}></Button> 
+      <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20}} onPress={()=> props.navigation.openDrawer()}></Button> 
       <Searchbar
 
         placeholder="Search"
@@ -31,7 +30,7 @@ const Home2Screen = (props) => {
 
         <View style={styles.hello}>
       <Text style={styles.welcome} variant="displaySmall">Hello</Text>
-      <Text variant="displaySmall" style={{fontWeight:'bold',}}>{name}</Text>
+      {/* <Text variant="displaySmall" style={{fontWeight:'bold',}}>{name}</Text> */}
       </View>
       <Text variant='titleMedium' style={{paddingBottom:20,paddingTop:20}}>Jobs Posted by you</Text>
       
