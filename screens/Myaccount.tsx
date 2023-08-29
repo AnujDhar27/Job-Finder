@@ -1,62 +1,47 @@
-import React, { useState } from 'react';
-import { Button, TextInput, Text} from 'react-native-paper';
+import React, { useContext, useState } from 'react';
+import { Button, TextInput, Text, Avatar} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
 import {Alert} from 'react-native'
+import UserContext from './UserContext';
 const Myaccount = (props) => {
-  const [email, setEmail] = useState(""); 
-  const[isEmailSent,setEmailSent]=useState(true);
-  const handleFP=()=>{
-    auth()
-    .sendPasswordResetEmail(email)
-    .then(()=>{
-      setEmailSent(true);
-      Alert.alert(
-        "Forgot Password",
-        "Please check your mail",
-        [{text:"OK",onPress:()=>console.log("Ok pressd")}]
-      )
-    })
-    .catch(error=>{
-      let errorMessage="An error has occured"
-      if (error.code === 'auth/invalid-email') {
-        errorMessage='The email id is invalid, please enter a valid email id';
-        console.log('That email address is invalid!');
-      }
-      Alert.alert(
-        "Forgot Password Error",
-        errorMessage,
-        [{text:"OK",onPress:()=>console.log("Ok,pressed")  }]
 
-      )
-    })
-
-  }
+  const {userName}=useContext(UserContext);
+  const {userEmail}=useContext(UserContext);
+  const {userRole}=useContext(UserContext);
+  const handleSignOut=()=>{
+    try{
+      auth().signOut();
+      console.log('user successfully logged out');
+      props.navigation.navigate('Login')
+    }
+    catch(error)
+    {
+      console.log('error while sign out',error);
+    }
+  };
   return (
       <View style={styles.container}>
-      <Text style={styles.welcome} variant="displaySmall">Restore your password</Text>
-      
-      <TextInput
-      mode= 'outlined'
-      style={styles.textBox1}
-        placeholder="Enter Email ID"
-        label="Email"
-        value={email}
-        onChangeText={text => setEmail(text)}
+        <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.openDrawer()}></Button> 
+      <Text style={styles.welcome} variant="displaySmall">Profile</Text>
+      <Avatar.Image style={{marginLeft:100,marginTop:40,}} size={200} source={require('../src/profile_Image.jpeg')}
       />
-
-      <Button mode="contained" onPress={handleFP} style={{marginTop:10}}>
-        Send Reset Instructions
-      </Button>
-      <Button onPress={()=>props.navigation.navigate("Login")} style={styles.forgot}><Text style={{textAlign:'center',paddingTop:20}} variant='titleSmall'>Back to <Text style={{color:'#6750a4'}}>Login </Text></Text></Button>
+     <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40}} variant='titleLarge'>Name: <Text>{userName}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Email ID: <Text>{userEmail}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Role: <Text>{userRole}</Text></Text>
+        <Button style={{marginTop:10}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
+          Sign Out
+        </Button>
+      
     </View>
   );
 };
 const styles=StyleSheet.create({
   container:{
     flex:1,
-    justifyContent:'center',
+    //justifyContent:'center',
+    // paddingTop:40,
     paddingHorizontal:20,
     backgroundColor:'white' ,
   },
@@ -64,22 +49,15 @@ const styles=StyleSheet.create({
     paddingBottom: 10,
     marginBottom: 20,
   },
-  textBox2:{
-    paddingBottom:10,
-    marginBottom:20,
-  },
+
   welcome:{
-    paddingBottom:60,
-    fontWeight:'bold',
+    textAlign:'center',
+    // paddingLeft:200,
+    paddingTop:10,
   },
   login:{
     paddingBottom:20,
     
   },
-  forgot:{
-    marginLeft:260,
-    marginTop:10,
-    
-  }
 })
 export default Myaccount;

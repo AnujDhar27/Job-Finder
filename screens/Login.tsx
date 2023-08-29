@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, TextInput, Text, SegmentedButtons} from 'react-native-paper';
 import   '@react-navigation/native'
 import { View, StyleSheet,TouchableOpacity } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
+import UserContext from './UserContext';
 
 const Login = (props) => {
+  const {setUserName}=useContext(UserContext);
+  const {setUserEmail}=useContext(UserContext);
+  const {setUserRole}=useContext(UserContext);
   const [name,setName]=useState("");
   const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("")
@@ -16,10 +20,17 @@ const Login = (props) => {
     .then(userCredentials=>{
       const user=userCredentials.user;
       console.log('Login successful',user.email);
+      console.log('name',name);
+      console.log('pass',password);
       setEmail("");
       setPassword("");
       setName("");
-      props.navigation.navigate(value==='emp'?"Home":"Home2",{name});
+      //props.navigation.navigate(value==='emp'?"Home":"Home2",{userdata:{name:name,email:user.email,}});
+      setUserName(name);
+      setUserEmail(user.email);
+      setUserRole(value==='emp'?'Employee':'Recruiter');
+      props.navigation.navigate(value === 'emp' ? "Home" : "Home2");
+
     })
     .catch(error=>{
       if(error.code === 'auth/invalid-email') {

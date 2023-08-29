@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {Card, Button, TextInput, Text} from 'react-native-paper';
-import { View, StyleSheet,KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet,KeyboardAvoidingView, Platform ,Image} from 'react-native';
 import { textAlign } from '@mui/system';
 import {useRoute} from '@react-navigation/native'
 import { Searchbar } from 'react-native-paper';
 import { Padding } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 import { ScrollView } from 'react-native-gesture-handler';
+import UserContext from './UserContext';
 
 const Home = (props) => {
   const route=useRoute();
-  const {name}=route.params;
+  const {userName}=useContext(UserContext);
+  //const {name}=route.params;
   const [searchQuery,setSearchQuery]=useState('');
   const onChangeSearch=(query)=>{setSearchQuery(query)};
   return (
@@ -25,21 +27,30 @@ const Home = (props) => {
       <ScrollView>
         <View style={styles.hello}>
       <Text style={styles.welcome} variant="displaySmall">Hello</Text>
-      <Text variant="displaySmall" style={{fontWeight:'bold',}}>{name}</Text>
+      <Text variant="displaySmall" style={{fontWeight:'bold',}}>{userName}</Text>
       </View>
       <Text variant='titleMedium' style={{fontWeight:'bold',paddingTop:20,marginBottom:320}}>Find your job</Text>
       
 
       <Card style={styles.card1}>
         <Card.Content>
-        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center'}}>44.8K</Text>
-          <Text variant='titleSmall' style={{textAlign:'center'}}>Remote Jobs</Text>
+          <Image 
+          source={require('../src/remote-jobs.png')}
+          style={{marginLeft:50,width:50,height:50,top:30}}
+          />
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',top:40}}>44.8K</Text>
+          <Text variant='titleSmall' style={{textAlign:'center',top:40}}>Remote Jobs</Text>
         </Card.Content>
         </Card>
         <Card style={styles.card2}>
         <Card.Content>
-        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center'}}>66.8K</Text>
-          <Text variant='titleSmall' style={{textAlign:'center'}}>Full Time</Text>
+          <Image 
+          source={require('../src/full-time.png')}
+          style={{width:30,height:30,top:25,left:18}}
+          
+          />
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',bottom:10}}>66.8K</Text>
+          <Text variant='titleSmall' style={{textAlign:'center',bottom:10}}>Full Time</Text>
         </Card.Content>
         </Card>
 
@@ -100,7 +111,7 @@ const styles=StyleSheet.create({
   },
   card1:{
     position:'absolute',
-    paddingTop:50,
+    paddingTop:0,
     paddingBottom:100,
    
     bottom:400,
@@ -110,9 +121,11 @@ const styles=StyleSheet.create({
     position:'absolute',
     left:190,
     bottom:525,
-    paddingTop:10,
+    paddingTop:0,
     paddingBottom:10,
     width:'50%',
+    height:105,
+
 
   },
   card3:{

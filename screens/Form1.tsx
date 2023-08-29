@@ -1,15 +1,44 @@
 import React, { useState } from 'react';
 import { Button, TextInput, Text} from 'react-native-paper';
 import { ScrollView, StyleSheet,KeyboardAvoidingView } from 'react-native';
-import { textAlign } from '@mui/system';
 import {Alert} from 'react-native';
 import {Formik} from 'formik';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app'
+import DocumentPicker from 'react-native-document-picker';
+import storage from '@react-native-firebase/storage';
+import FileViewer from 'react-native-file-viewer';
+import RNFetchBlob from 'rn-fetch-blob'; 
 
 const Form1 = (props) => {
   const db=firestore()
-  
+  const [selectedFile,setSelectedFile]=useState([]);
+  const [fileResponse,setFileResponse]=useState([]);
+  const [path,setPath]=useState('');
+  const handleFileUpload=async()=>{
+    try{
+      const result=await DocumentPicker.pick({type:[DocumentPicker.types.doc,DocumentPicker.types.docx],copyTo:'documentDirectory'})
+      setPath(result[0].uri);
+      setFileResponse(result);
+      // result=result.map(doc=>({
+
+      //   fileCopyUri:'file://${decodeURIComponent(result.fileCopyUri)}',
+      // }))
+      
+      setSelectedFile(result);
+      
+      
+      console.log(result);
+      
+    }
+  catch(error){
+    console.log('Error',error);
+  }
+
+}
+const handlePreview=async()=>{
+  await FileViewer.open(path);
+}
   const handleSubmit=async(values)=>{
     try{
       const user=firebase.auth().currentUser;
@@ -25,8 +54,25 @@ const Form1 = (props) => {
           expSal:values.expSal,
           yoe:values.yoe,
           message:values.message,
+          fileUrl:'',
         };
         const userDocRef=db.collection('users').doc(user.uid);
+        if(selectedFile)
+        {
+          
+          console.log(selectedFile[0].name);
+          const fileRef=storage().ref('userFiles/${user.uid}/${selectedFile[0].name}');
+          //const fileRef=storage().ref('${selectedFile[0].name}');
+          //console.log(selectedFile[0].fileCopyUri);
+           const filepath=selectedFile[0].uri;
+          //const filepath='userFiles/${user.uid}/${selectedFile[0].uri}';
+          await fileRef.putFile(filepath);
+          //console.log(selectedFile[0].uri);
+          const fileUrl=await fileRef.getDownloadURL();
+           //console.log(fileUrl);
+          await userDocRef.update({fileUrl});
+          setSelectedFile(null);
+        }
         await userDocRef.set(userData);
         Alert.alert('Success','Form data submitted')
 
@@ -59,6 +105,8 @@ const Form1 = (props) => {
         errors.currOrg="*Current Organization required";
         if(!values.emailID)
         errors.emailID="*Email ID required";
+       if( /^\d+$/.test(values.cinfo)&&values.cinfo.length!==10)
+       errors.cinfo="*Enter a Valid Phone Number"
         if(!values.cinfo)
         errors.cinfo="*Contact Information required";
         if(!values.currSal)
@@ -170,6 +218,16 @@ const Form1 = (props) => {
                 style={{paddingBottom:70,marginBottom:20}}
         />
         {errors.message && touched.message && <Text style={styles.errorMessage}>{errors.message}</Text>}
+
+        {fileResponse.map((file,index)=>(
+          <Text
+           style={{paddingBottom:20,color:'purple',textAlign:'center'}}>
+            {file.name}
+          </Text>
+        ))}
+
+        <Button mode='outlined' onPress={handleFileUpload}style={{marginBottom:20,}}>Upload Resume</Button>
+        <Button mode='outlined' style={{marginBottom:20,}} onPress={handlePreview}>Preview Resume</Button>
         <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0} style={{marginBottom:20}}>
             Submit
         </Button>

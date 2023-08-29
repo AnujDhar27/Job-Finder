@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextInput, Text,Card} from 'react-native-paper';
-import { View, StyleSheet,FlatList } from 'react-native';
+import { View, StyleSheet,FlatList,ScrollView } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
 import {Alert} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import { unstable_useId } from '@mui/material';
 
 
 const Applications= (props) => {
@@ -27,10 +26,11 @@ const Applications= (props) => {
       return()=>unsubscribe();
     })
   return (
+
       <View style={styles.container}>
-      <Button icon="menu" mode='contained' style={{position:'relative',width:2}} onPress={()=>props.navigation.openDrawer()}></Button>
-              {/* <Button  icon="menu" style={{position:'relative',top:40,width:2,paddingRight:20}} onPress={()=> props.navigation.console.log("pressed")}></Button>  */}
-      <Text variant="headlineLarge" style={{textAlign:'center'}}>Applications</Text>
+      <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button>
+
+      <Text variant="headlineLarge" style={{textAlign:'center',paddingTop:10,}}>Applications</Text>
       <FlatList
         data={userDetails}
         keyExtractor={(item) => item.id}
@@ -50,12 +50,13 @@ const Applications= (props) => {
         )}
         />
     </View>
+
   );
 };
 const styles=StyleSheet.create({
   container:{
-    //flex:1,
-    paddingTop:40,
+    flex:1,
+    // paddingTop:40,
     // justifyContent:'center'
     paddingHorizontal:20,
     backgroundColor:'white' ,
