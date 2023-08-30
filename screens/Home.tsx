@@ -36,18 +36,18 @@ const Home = (props) => {
         <Card.Content>
           <Image 
           source={require('../src/remote-jobs.png')}
-          style={{marginLeft:50,width:50,height:50,top:30}}
+          style={{marginLeft:49,width:50,height:50,top:30}}
           />
         <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',top:40}}>44.8K</Text>
           <Text variant='titleSmall' style={{textAlign:'center',top:40}}>Remote Jobs</Text>
         </Card.Content>
         </Card>
+
         <Card style={styles.card2}>
         <Card.Content>
           <Image 
           source={require('../src/full-time.png')}
           style={{width:30,height:30,top:25,left:18}}
-          
           />
         <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',bottom:10}}>66.8K</Text>
           <Text variant='titleSmall' style={{textAlign:'center',bottom:10}}>Full Time</Text>
@@ -56,14 +56,14 @@ const Home = (props) => {
 
         <Card style={styles.card3}>
         <Card.Content>
-        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center'}}>38.9K</Text>
-          <Text variant='titleSmall' style={{textAlign:'center'}}>Part Time</Text>
+        <Image 
+          source={require('../src/part-tiime.png')}
+          style={{width:30,height:30,top:25,left:18}}
+          />
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',bottom:10}}>38.9K</Text>
+          <Text variant='titleSmall' style={{textAlign:'center',bottom:10}}>Part Time</Text>
         </Card.Content>
         </Card>
-
-      
-
-
       <Text variant='headlineMedium' style={styles.recent} >Recent Job List</Text>
       <Card style={styles.card4}>
         <Card.Content>
@@ -122,7 +122,7 @@ const styles=StyleSheet.create({
     left:190,
     bottom:525,
     paddingTop:0,
-    paddingBottom:10,
+    paddingBottom:0,
     width:'50%',
     height:105,
 
@@ -132,8 +132,8 @@ const styles=StyleSheet.create({
     position:'absolute',
     left:190,
     bottom:400,
-    paddingTop:10,
-    paddingBottom:10,
+    paddingTop:0,
+    paddingBottom:0,
     width:'50%',
   },
   card4:{

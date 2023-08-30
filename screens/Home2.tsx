@@ -79,7 +79,14 @@ import UserContext from './UserContext';
       style={styles.fab}
       onPress={()=>props.navigation.navigate('PostForm')}
       />
-
+      <FAB
+      icon="plus"
+      style={{position:'absolute',
+      left:350,
+      top:700,}}
+      onPress={()=>props.navigation.navigate('LocationSearch')}
+      />
+      
     </KeyboardAvoidingView>
 
   );

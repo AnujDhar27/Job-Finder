@@ -5,11 +5,11 @@ import { textAlign } from '@mui/system';
 import {Alert} from 'react-native'
 import {Formik} from 'formik'
 import { ScrollView } from 'react-native-gesture-handler';
-const PostForm = (props) => {
 
+const PostForm = (props) => {
   return (
-    
-      <ScrollView style={styles.container}>
+
+      <View style={styles.container}>
       <Text style={styles.welcome} variant="displaySmall">Job Posting Form</Text>
       <Formik
       initialValues={{cname:'',loc:'',role:'',pos:'',type:'',sal:'',desc:''}}
@@ -36,9 +36,6 @@ const PostForm = (props) => {
 
         if(!values.desc)
         errors.desc="*Job Description required";
-
-
-
     return errors;
       }}
       >
@@ -133,7 +130,7 @@ const PostForm = (props) => {
         )}
       </Formik>
       
-      </ScrollView>
+      </View>
   );
 };
 const styles=StyleSheet.create({

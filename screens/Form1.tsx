@@ -8,16 +8,15 @@ import firebase from '@react-native-firebase/app'
 import DocumentPicker from 'react-native-document-picker';
 import storage from '@react-native-firebase/storage';
 import FileViewer from 'react-native-file-viewer';
-import RNFetchBlob from 'rn-fetch-blob'; 
 
 const Form1 = (props) => {
   const db=firestore()
-  const [selectedFile,setSelectedFile]=useState([]);
+  const [selectedFile,setSelectedFile]=useState({});
   const [fileResponse,setFileResponse]=useState([]);
   const [path,setPath]=useState('');
   const handleFileUpload=async()=>{
     try{
-      const result=await DocumentPicker.pick({type:[DocumentPicker.types.doc,DocumentPicker.types.docx],copyTo:'documentDirectory'})
+      const result=await DocumentPicker.pick({type:[DocumentPicker.types.doc,DocumentPicker.types.docx],copyTo:'cachesDirectory'})
       setPath(result[0].uri);
       setFileResponse(result);
       // result=result.map(doc=>({
@@ -28,7 +27,7 @@ const Form1 = (props) => {
       setSelectedFile(result);
       
       
-      console.log(result);
+      console.log(result[0].fileCopyUri);
       
     }
   catch(error){
@@ -57,25 +56,27 @@ const handlePreview=async()=>{
           fileUrl:'',
         };
         const userDocRef=db.collection('users').doc(user.uid);
+        await userDocRef.set(userData);
         if(selectedFile)
         {
           
           console.log(selectedFile[0].name);
-          const fileRef=storage().ref('userFiles/${user.uid}/${selectedFile[0].name}');
+          const fileRef=storage().ref(`/userFiles/${user.uid}/${selectedFile[0].name}`);
           //const fileRef=storage().ref('${selectedFile[0].name}');
           //console.log(selectedFile[0].fileCopyUri);
-           const filepath=selectedFile[0].uri;
+           const filepath=selectedFile[0].fileCopyUri;
           //const filepath='userFiles/${user.uid}/${selectedFile[0].uri}';
           await fileRef.putFile(filepath);
           //console.log(selectedFile[0].uri);
           const fileUrl=await fileRef.getDownloadURL();
-           //console.log(fileUrl);
-          await userDocRef.update({fileUrl});
+          console.log(fileUrl);
+          await userDocRef.update({"fileUrl":fileUrl});
           setSelectedFile(null);
         }
-        await userDocRef.set(userData);
+        
         Alert.alert('Success','Form data submitted')
 
+        
       }
       else
       {

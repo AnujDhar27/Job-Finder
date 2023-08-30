@@ -16,6 +16,7 @@ import SavedApplicants from './SavedApplicants';
 import Mycontacts from './Mycontacts';
 import Myaccount from './Myaccount';
 import UserContext from './UserContext';
+import LocationSearch from './LocationSearch';
 
 const Stack = createStackNavigator();
 const Drawer=createDrawerNavigator();
@@ -50,6 +51,7 @@ const Drawer=createDrawerNavigator();
           <Stack.Screen name="Desc1" component={Desc1} options={{headerShown:false}} />
           <Stack.Screen name="Form1" component={Form1} options={{headerShown:false}} />
           <Stack.Screen name="PostForm" component={PostForm} options={{headerShown:false}} /> 
+          <Stack.Screen name="LocationSearch" component={LocationSearch} options={{headerShown:false}}/>
           <Stack.Screen name="Home2" component={Draw} options={{headerShown:false}} />
         </Stack.Navigator>
         </UserContext.Provider>
