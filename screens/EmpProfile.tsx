@@ -1,3 +1,4 @@
+
 import React, { useContext, useState } from 'react';
 import { Button, TextInput, Text, Avatar,FAB} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
@@ -8,9 +9,11 @@ import UserContext from './UserContext';
 import DocumentPicker from 'react-native-document-picker';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
-import firebase from '@react-native-firebase/app'
-const Myaccount = (props) => {
+import firebase from '@react-native-firebase/app';
+import RazorpayCheckout from 'react-native-razorpay';
 
+const EmpProfile = (props) => {
+    const db=firestore();
   const {userName}=useContext(UserContext);
   const {userEmail}=useContext(UserContext);
   const {userRole}=useContext(UserContext);
@@ -40,6 +43,36 @@ const Myaccount = (props) => {
     console.log('Error',error);
   }
 };
+const handlePayment=()=>{
+    const user=firebase.auth().currentUser;
+var options={
+    description:'Credits towards the consultation',
+    image:'https://i.imgur.com/3g7nmJC.png',
+    currency:'INR',
+    key:'rzp_test_1cfiXazP8uKtw8',//api key from razorpay,
+    amount:'100',//the amount is given in paise, 100 paise = 1 rupee is the minimum value
+    name:'Job Finder',
+    prefill:{
+        email:'anuj@gmail.com',
+        contact:'9191919876',
+        name:'Anuj Razorpay test',
+    },
+    theme:{color:'#800080'}
+}
+RazorpayCheckout.open(options).then(async(data)=>{
+    alert(`Success: ${data.razorpay_payment_id}`);
+    if(user)
+    {
+        const userDocRef=db.collection('users').doc(user.uid);
+        await userDocRef.update({"payID":`${data.razorpay_payment_id}`});
+    }
+
+}).catch((error) => {
+  // handle failure
+  alert(`Error: ${error.code} | ${error[0].description}`);
+  console.log(`${error.description}`)
+});
+};
   const handleSignOut=()=>{
     try{
       auth().signOut();
@@ -53,7 +86,7 @@ const Myaccount = (props) => {
   };
   return (
       <View style={styles.container}>
-        <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.openDrawer()}></Button> 
+        <Button  icon="home" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.navigate('Home')}></Button> 
       <Text style={styles.welcome} variant="displaySmall">Profile</Text>
       <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
 
@@ -62,7 +95,8 @@ const Myaccount = (props) => {
      <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40}} variant='titleLarge'>Name: <Text>{userName}</Text></Text>
      <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Email ID: <Text>{userEmail}</Text></Text>
      <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Role: <Text>{userRole}</Text></Text>
-        <Button style={{marginTop:10}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
+     <Button mode='contained-tonal' rippleColor="#FF000020" onPress={handlePayment}> Go Premium</Button>
+        <Button style={{marginTop:20}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
           Sign Out
         </Button>
       
@@ -92,4 +126,4 @@ const styles=StyleSheet.create({
     
   },
 })
-export default Myaccount;
+export default EmpProfile;

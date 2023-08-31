@@ -54,6 +54,7 @@ const handlePreview=async()=>{
           yoe:values.yoe,
           message:values.message,
           fileUrl:'',
+          payID:'',
         };
         const userDocRef=db.collection('users').doc(user.uid);
         await userDocRef.set(userData);

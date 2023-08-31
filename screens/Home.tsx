@@ -22,13 +22,13 @@ const Home = (props) => {
               placeholder="Search"
               onChangeText={onChangeSearch}
               value={searchQuery}
-              style={styles.searchbar}
-/>
+              style={styles.searchbar}/>
+              <Button mode='contained-tonal' onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}}>p</Button>
       <ScrollView>
-        <View style={styles.hello}>
+        
       <Text style={styles.welcome} variant="displaySmall">Hello</Text>
       <Text variant="displaySmall" style={{fontWeight:'bold',}}>{userName}</Text>
-      </View>
+      
       <Text variant='titleMedium' style={{fontWeight:'bold',paddingTop:20,marginBottom:320}}>Find your job</Text>
       
 
@@ -102,8 +102,8 @@ const styles=StyleSheet.create({
   },
   searchbar:{
     marginTop:40,
-    marginRight:60,
-    marginLeft:20,
+    marginRight:100,
+    marginLeft:10,
   },
   apply:{
     marginLeft:220,
