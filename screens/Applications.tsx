@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextInput, Text,Card} from 'react-native-paper';
-import { View, StyleSheet,FlatList,ScrollView, PermissionsAndroid } from 'react-native';
+import { View, StyleSheet,FlatList,ScrollView, PermissionsAndroid, SectionList } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
 import {Alert} from 'react-native'
@@ -9,8 +9,7 @@ import firestore from '@react-native-firebase/firestore';
 import RNFetchBlob from 'rn-fetch-blob';
 
 const Applications= (props) => {
-    const [userDetails1,setUserDetails1]=useState([]);
-    const [userDetails2,setUserDetails2]=useState([]);
+    const [userData,setUserData]=useState([]);
     useEffect(()=>{
       const unsubscribe=firestore()
       .collection('users')
@@ -36,14 +35,12 @@ const Applications= (props) => {
           });
         }
         });
-        const DATA=[data1,data2];
-        setUserDetails1(data1);
-        setUserDetails2(data2);
-       // console.log(data2);
+        setUserData([...data1,...data2]);//merging of 2 arrays
       });
-      
       return()=>unsubscribe();
     })
+    
+    //console.log(userData);
   
     const handleDownload=async(val)=>{
       try {
@@ -89,7 +86,7 @@ const Applications= (props) => {
     );
   })
         } else {
-          console.log('Camera permission denied');
+          console.log('Storage permission denied');
         }
       } catch (err) {
         console.warn(err);
@@ -100,10 +97,9 @@ const Applications= (props) => {
       <View style={styles.container}>
       <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button>
 
-      <Text variant="headlineLarge" style={{textAlign:'center',paddingTop:10,}}>Applications</Text>
-      
+      <Text variant="headlineLarge" style={{textAlign:'center',paddingTop:10,}}>Applications</Text>  
       <FlatList
-        data={userDetails1}
+        data={userData}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Card style={{marginTop:20,}}>
@@ -121,26 +117,6 @@ const Applications= (props) => {
             </View>
             </Card>
         )}
-        />
-        <FlatList
-         data={userDetails2}
-         keyExtractor={(item) => item.id}
-         renderItem={({ item }) => (
-           <Card style={{marginTop:20,}}>
-           <View style={styles.userContainer}>
-             <Text variant='titleMedium'>Name: {item.name}</Text>
-             <Text variant='titleMedium'>Email: {item.emailID}</Text>
-             <Text variant='titleMedium'>Phone Number: {item.cinfo}</Text>
-             <Text variant='titleMedium'>Current Organization: {item.currOrg}</Text>
-             <Text variant='titleMedium'>Years of Experience: {item.yoe}</Text>
-             <Text variant='titleMedium'>Current Salary: {item.currSal}</Text>
-             <Text variant='titleMedium'>Expected Salary: {item.expSal}</Text>
-             <Text variant='titleMedium'>Payment ID: {item.payID}</Text> 
-             <Text variant='titleMedium'>Message to the Recruiter: {item.message}</Text>
-             <Button mode='contained-tonal' icon='download' style={{marginTop:10,}} onPress={()=>handleDownload(item.fileUrl)}>Downlaod Resume</Button>
-             </View>
-             </Card>
-         )}
         />
     </View>
 

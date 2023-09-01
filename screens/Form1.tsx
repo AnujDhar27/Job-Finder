@@ -95,10 +95,7 @@ const handlePreview=async()=>{
       <Text style={styles.welcome} variant="displaySmall">Job Application Form</Text>
       <Formik
       initialValues={{name:'',currOrg:'',emailID:'',cinfo:'',currSal:'',expSal:'',yoe:'',message:''}}
-      onSubmit={
-        handleSubmit
-        //values=>console.log(values)
-      }
+      onSubmit={handleSubmit}
       validate={values=>{
         const errors={};
         if(!values.name)
@@ -119,6 +116,8 @@ const handlePreview=async()=>{
         errors.yoe="*Years of Experience required";
         if(!values.message)
         errors.message="*Message required";
+        // if(!values.fileUrl)
+        // errors.message="*Resume upload is required";
     return errors;
       }}
       >
@@ -126,7 +125,7 @@ const handlePreview=async()=>{
             <KeyboardAvoidingView>
               <TextInput
                 mode='outlined'
-                label='Name'
+                label='Name*'
                 name="name"
                 placeholder="Enter your name"
                 onChangeText={handleChange('name')}
@@ -137,7 +136,7 @@ const handlePreview=async()=>{
             {errors.name&& touched.name && <Text style={styles.errorMessage}>{errors.name}</Text>}
              <TextInput
                 mode='outlined'
-                label='Current Organization'
+                label='Current Organization*'
                 name="currOrg"
                 placeholder="Enter the name of your current organization"
                 onChangeText={handleChange('currOrg')}
@@ -148,7 +147,7 @@ const handlePreview=async()=>{
             {errors.currOrg && touched.currOrg && <Text style={styles.errorMessage}>{errors.currOrg}</Text>}
              <TextInput
                 mode='outlined'
-                label='Email ID'
+                label='Email ID*'
                 name="emailID"
                 placeholder="Enter your Email ID"
                 keyboardType='email-address'
@@ -160,7 +159,7 @@ const handlePreview=async()=>{
             {errors.emailID && touched.emailID && <Text style={styles.errorMessage}>{errors.emailID}</Text>}
                 <TextInput
                 mode='outlined'
-                label='Contact Information'
+                label='Contact Information*'
                 name="cinfo"
                 placeholder="Enter your contact number"
                 keyboardType='numeric'
@@ -172,7 +171,7 @@ const handlePreview=async()=>{
             {errors.cinfo && touched.cinfo && <Text style={styles.errorMessage}>{errors.cinfo}</Text>}
                 <TextInput
                 mode='outlined'
-                label='Current Salary'
+                label='Current Salary*'
                 name="currSal"
                 placeholder="Enter Current Salary"
                 keyboardType='numeric'
@@ -185,7 +184,7 @@ const handlePreview=async()=>{
             
             <TextInput
             mode='outlined'
-            label='Expected Salary'
+            label='Expected Salary*'
             name="expSal"
             placeholder="Enter Expected Salary"
             keyboardType='numeric'
@@ -198,7 +197,7 @@ const handlePreview=async()=>{
 
             <TextInput
             mode='outlined'
-            label='Years of Experience'
+            label='Years of Experience*'
             name="yoe"
             placeholder="Enter your years of experience"
             keyboardType='numeric'
@@ -211,7 +210,7 @@ const handlePreview=async()=>{
 
         <TextInput
             mode='outlined'
-            label='Message'
+            label='Message*'
             name="message"
             placeholder="Enter your message to the recruiter"
             onChangeText={handleChange('message')}
@@ -228,7 +227,8 @@ const handlePreview=async()=>{
           </Text>
         ))}
 
-        <Button mode='outlined' onPress={handleFileUpload}style={{marginBottom:20,}}>Upload Resume</Button>
+        <Button mode='outlined' onPress={handleFileUpload}style={{marginBottom:20,}}>Upload Resume*</Button>
+        {/* {errors.fileUrl && touched.fileUrl && <Text style={styles.errorMessage}>{errors.fileUrl}</Text>} */}
         <Button mode='outlined' style={{marginBottom:20,}} onPress={handlePreview}>Preview Resume</Button>
         <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0} style={{marginBottom:20}}>
             Submit

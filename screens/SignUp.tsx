@@ -3,9 +3,9 @@ import { Button, TextInput, Text} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth'
 import {Alert} from 'react-native';
-
+import firestore from '@react-native-firebase/firestore'
 const SignUp= (props) => {
-
+  const db=firestore();
   const [name,setName]=useState("");
   const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
@@ -15,7 +15,8 @@ const SignUp= (props) => {
       .then(userCredentials => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
-
+        const userDocRef=db.collection('users').doc(user.uid);
+        userDocRef.set({"payID":null});
         Alert.alert(
           'Sign Up Successful',
           'You can now log in using your credentials',

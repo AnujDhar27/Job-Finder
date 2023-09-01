@@ -5,6 +5,8 @@ import { View, StyleSheet,TouchableOpacity } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
 import UserContext from './UserContext';
+import moment from 'moment';
+import firestore from '@react-native-firebase/firestore';
 
 const Login = (props) => {
   const {setUserName}=useContext(UserContext);
@@ -25,6 +27,12 @@ const Login = (props) => {
       setEmail("");
       setPassword("");
       setName("");
+      const db=firestore();
+      const date=new Date();
+      const newDate=moment(date).format("DD/MM/YYYY");
+      const userDocRef=db.collection('users').doc(user.uid);
+      userDocRef.update({"todayDate":newDate});
+      
       //props.navigation.navigate(value==='emp'?"Home":"Home2",{userdata:{name:name,email:user.email,}});
       setUserName(name);
       setUserEmail(user.email);

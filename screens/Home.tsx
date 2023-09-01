@@ -23,7 +23,7 @@ const Home = (props) => {
               onChangeText={onChangeSearch}
               value={searchQuery}
               style={styles.searchbar}/>
-              <Button mode='contained-tonal' onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}}>p</Button>
+              <Button   mode='contained-tonal' onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}} >p</Button>
       <ScrollView>
         
       <Text style={styles.welcome} variant="displaySmall">Hello</Text>

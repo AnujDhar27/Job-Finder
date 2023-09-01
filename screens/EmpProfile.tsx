@@ -1,5 +1,5 @@
 
-import React, { useContext, useState } from 'react';
+import React, { useEffect,useContext, useState } from 'react';
 import { Button, TextInput, Text, Avatar,FAB} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { textAlign } from '@mui/system';
@@ -11,6 +11,7 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 import RazorpayCheckout from 'react-native-razorpay';
+import moment from 'moment';
 
 const EmpProfile = (props) => {
     const db=firestore();
@@ -19,6 +20,46 @@ const EmpProfile = (props) => {
   const {userRole}=useContext(UserContext);
   const [selectedFile,setSelectedFile]=useState({});
   const [fileUrl,setfileUrl]=useState('');
+  const [type,setType]=useState('');
+  const [validity,setValidity]=useState('-');
+  const user=firebase.auth().currentUser;
+  const [count,setCount]=useState(0);
+  if(user)
+  {
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
+            
+            if(documentSnapshot.data().payID!=null)
+            {
+              setType('Premium');              
+              const validDate=moment(documentSnapshot.data().premiumDate).add(30,'days').format('DD/MM/YYYY');
+              setValidity(validDate);
+              const currDate=new Date();
+              const newCurrDate=moment(currDate).format('DD/MM/YYYY');
+              if(moment(newCurrDate).isSameOrAfter(validDate))
+               {
+                 console.log('INvalid');
+                 setType('Normal');
+                 //setValidity('Expired');
+                 const Ref=db.collection('users').doc(user.uid);
+                 Ref.update({"payID":null});
+               }
+               else{
+                 console.log('valid');
+               }
+              
+              }
+            else{
+              setType('Normal');
+            }
+        });
+        return()=>unsubscribe();
+      });
+      
+    }
   const handleProfilePic=async()=>{
     try{
       const user=firebase.auth().currentUser;
@@ -42,7 +83,9 @@ const EmpProfile = (props) => {
     
     console.log('Error',error);
   }
+  
 };
+
 const handlePayment=()=>{
     const user=firebase.auth().currentUser;
 var options={
@@ -63,9 +106,12 @@ RazorpayCheckout.open(options).then(async(data)=>{
     alert(`Success: ${data.razorpay_payment_id}`);
     if(user)
     {
+        const date=new Date();
+        //const newDate=moment(date).format("DD/MM/YYYY");
         const userDocRef=db.collection('users').doc(user.uid);
         await userDocRef.update({"payID":`${data.razorpay_payment_id}`});
-    }
+        await userDocRef.update({"premiumDate":date});
+            }
 
 }).catch((error) => {
   // handle failure
@@ -95,7 +141,9 @@ RazorpayCheckout.open(options).then(async(data)=>{
      <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40}} variant='titleLarge'>Name: <Text>{userName}</Text></Text>
      <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Email ID: <Text>{userEmail}</Text></Text>
      <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Role: <Text>{userRole}</Text></Text>
-     <Button mode='contained-tonal' rippleColor="#FF000020" onPress={handlePayment}> Go Premium</Button>
+     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Type: <Text>{type}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge' >Next Due: <Text>{validity}</Text></Text>
+     <Button mode='contained-tonal' rippleColor="#FF000020" onPress={handlePayment} disabled={type==='Premium'?true:false}> Go Premium</Button>
         <Button style={{marginTop:20}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
           Sign Out
         </Button>
