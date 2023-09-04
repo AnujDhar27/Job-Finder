@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+import {useState,useRef} from 'react';
 import { Button, TextInput, Text} from 'react-native-paper';
-import { ScrollView, StyleSheet,KeyboardAvoidingView } from 'react-native';
+import { ScrollView, StyleSheet,KeyboardAvoidingView,SafeAreaView ,Platform} from 'react-native';
 import {Alert} from 'react-native';
 import {Formik} from 'formik';
 import firestore from '@react-native-firebase/firestore';
@@ -8,12 +9,14 @@ import firebase from '@react-native-firebase/app'
 import DocumentPicker from 'react-native-document-picker';
 import storage from '@react-native-firebase/storage';
 import FileViewer from 'react-native-file-viewer';
-
+import {actions, RichEditor, RichToolbar} from "react-native-pell-rich-editor";
 const Form1 = (props) => {
-  const db=firestore()
+  var fileReader=new FileReader();
+  const db=firestore();
   const [selectedFile,setSelectedFile]=useState({});
   const [fileResponse,setFileResponse]=useState([]);
   const [path,setPath]=useState('');
+  //const richText = useRef();
   const handleFileUpload=async()=>{
     try{
       const result=await DocumentPicker.pick({type:[DocumentPicker.types.doc,DocumentPicker.types.docx],copyTo:'cachesDirectory'})
@@ -34,10 +37,13 @@ const Form1 = (props) => {
     console.log('Error',error);
   }
 
-}
+};
+const handleEdit=(path)=>{
+console.log('pressed');
+};
 const handlePreview=async()=>{
   await FileViewer.open(path);
-}
+};
   const handleSubmit=async(values)=>{
     try{
       const user=firebase.auth().currentUser;
@@ -229,7 +235,9 @@ const handlePreview=async()=>{
 
         <Button mode='outlined' onPress={handleFileUpload}style={{marginBottom:20,}}>Upload Resume*</Button>
         {/* {errors.fileUrl && touched.fileUrl && <Text style={styles.errorMessage}>{errors.fileUrl}</Text>} */}
+        <Button mode='outlined' style={{marginBottom:20,}} onPress={()=>handleEdit(path)}>Edit Resume</Button>
         <Button mode='outlined' style={{marginBottom:20,}} onPress={handlePreview}>Preview Resume</Button>
+
         <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0} style={{marginBottom:20}}>
             Submit
         </Button>

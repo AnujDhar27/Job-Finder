@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Button, TextInput, Text,Card} from 'react-native-paper';
-import { View, StyleSheet,FlatList,ScrollView, PermissionsAndroid, SectionList } from 'react-native';
-import { textAlign } from '@mui/system';
-import auth from '@react-native-firebase/auth'
-import {Alert} from 'react-native'
-import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
-import RNFetchBlob from 'rn-fetch-blob';
+  import React, { useEffect, useState } from 'react';
+  import { Button, TextInput, Text,Card} from 'react-native-paper';
+  import { View, StyleSheet,FlatList, PermissionsAndroid, } from 'react-native';
+  import { textAlign } from '@mui/system';
+  import {Alert} from 'react-native'
+  import { useNavigation } from '@react-navigation/native';
+  import firestore from '@react-native-firebase/firestore';
+  import RNFetchBlob from 'rn-fetch-blob';
+  import firebase from '@react-native-firebase/app'
+
 
 const Applications= (props) => {
+  const [icons,setIcons]=useState(0);
+  const db=firestore();
     const [userData,setUserData]=useState([]);
     useEffect(()=>{
       const unsubscribe=firestore()
@@ -28,7 +31,7 @@ const Applications= (props) => {
               });
               //console.log('hi');
             }
-            else{
+            else if (documentSnapshot.data().payID==null && documentSnapshot.data().name!=null){
           data2.push({
             id:documentSnapshot.id,
             ...documentSnapshot.data(),
@@ -41,7 +44,12 @@ const Applications= (props) => {
     })
     
     //console.log(userData);
-  
+    const handleFav=async(item)=>{
+      console.log('pressed fav button',item.uid);
+      const userDocRef=db.collection('users').doc(item.uid);
+      await userDocRef.update({"isFav":1});
+    }
+
     const handleDownload=async(val)=>{
       try {
         const granted = await PermissionsAndroid.request(
@@ -104,6 +112,7 @@ const Applications= (props) => {
         renderItem={({ item }) => (
           <Card style={{marginTop:20,}}>
           <View style={styles.userContainer}>
+            <Button icon='cards-heart-outline' style={{left:320,top:20,zIndex:1,position:'absolute'}} onPress={()=>handleFav(item)}>add</Button>
             <Text variant='titleMedium'>Name: {item.name}</Text>
             <Text variant='titleMedium'>Email: {item.emailID}</Text>
             <Text variant='titleMedium'>Phone Number: {item.cinfo}</Text>
@@ -113,7 +122,7 @@ const Applications= (props) => {
             <Text variant='titleMedium'>Expected Salary: {item.expSal}</Text>
             <Text variant='titleMedium'>Payment ID: {item.payID}</Text>   
             <Text variant='titleMedium'>Message to the Recruiter: {item.message}</Text>
-            <Button mode='contained-tonal' icon='download' style={{marginTop:10,}} onPress={()=>handleDownload(item.fileUrl)}>Downlaod Resume</Button>
+            <Button mode='contained-tonal' icon='download' style={{marginTop:10,}} onPress={()=>handleDownload(item.fileUrl)}>Download Resume</Button>
             </View>
             </Card>
         )}

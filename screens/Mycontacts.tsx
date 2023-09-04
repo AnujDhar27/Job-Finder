@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextInput, Text,Card,Searchbar} from 'react-native-paper';
+import { Button, TextInput, Text,Card,Searchbar,IconButton} from 'react-native-paper';
 import { View, StyleSheet,FlatList,Linking } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
@@ -15,6 +15,7 @@ const Mycontacts = (props) => {
     .onSnapshot((querySnapshot)=>{
       const data=[];
       querySnapshot.forEach((documentSnapshot)=>{
+          if(documentSnapshot.data().cinfo!=null)
           if(documentSnapshot.data().cinfo.length===10&& /^\d+$/.test(documentSnapshot.data().cinfo))
           {
         data.push({
@@ -29,7 +30,13 @@ const Mycontacts = (props) => {
   })
 
   const [searchQuery,setSearchQuery]=useState('');
-  const onChangeSearch=(query)=>{setSearchQuery(query)};
+  const onChangeSearch=(query)=>{
+    setSearchQuery(query)
+    // let tempList=userDetails.filter(item=>{
+    //   return item.name.toLowerCase().indexOf(query.toLowerCase())>1;
+    // })
+  };
+
   return (
       <View style={styles.container}>
         <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button>
@@ -47,16 +54,20 @@ const Mycontacts = (props) => {
       keyExtractor={(item)=>item.id}
       renderItem={({item})=>(
        
-        <Card style={{marginTop:20,}}>
-          <TouchableOpacity onPress={() => Linking.openURL(`tel:${item.cinfo}`)}>
+        <Card style={{marginTop:20,paddingBottom:10,}}>
+         {/* <TouchableOpacity onPress={() => Linking.openURL(`mailto:${item.emailID}`)}> */}
           <View style={{padding:20,}}>
             
             <Text variant='titleMedium'>Name: {item.name}</Text>
             <Text variant='titleMedium'>Email: {item.emailID}</Text>
             <Text variant='titleMedium'>Phone Number: {item.cinfo}</Text>
-            
+
+            <IconButton icon="email" onPress={()=>Linking.openURL(`mailto:${item.emailID}`)} style={{position:'absolute',left:300,top:10,}}/>
+            <IconButton icon='cellphone' onPress={()=>Linking.openURL(`tel:${item.cinfo}`)} style={{position:'absolute',left:300,top:50,}}/>
+            {/* <Button style={{marginLeft:100,marginRight:100,right:100,top:20,}} icon='cellphone' mode='elevated' onPress={()=>Linking.openURL(`tel:${item.cinfo}`)}></Button> 
+            <Button icon='email' style={{marginLeft:80,marginRight:80,left:80,bottom:20,}}  mode='elevated' onPress={()=>Linking.openURL(`mailto:${item.emailID}`)}></Button> */}
           </View>
-          </TouchableOpacity>
+          {/* </TouchableOpacity> */}
         </Card>
 
         
