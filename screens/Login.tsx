@@ -1,13 +1,13 @@
 import React, { useContext, useState } from 'react';
-import { Button, TextInput, Text, SegmentedButtons} from 'react-native-paper';
+import { Button, TextInput, Text, SegmentedButtons,IconButton} from 'react-native-paper';
 import   '@react-navigation/native'
-import { View, StyleSheet,TouchableOpacity } from 'react-native';
+import { View, StyleSheet,TouchableOpacity, KeyboardAvoidingView ,Dimensions} from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
 import UserContext from './UserContext';
 import moment from 'moment';
 import firestore from '@react-native-firebase/firestore';
-
+import Wavyheader from './Wavyheader';
 const Login = (props) => {
   const {setUserName}=useContext(UserContext);
   const {setUserEmail}=useContext(UserContext);
@@ -16,6 +16,11 @@ const Login = (props) => {
   const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("")
   const [value,setValue]=useState('emp')
+  const [secure,setSecure]=useState(true)
+  
+  const handleEye=()=>{
+    setSecure((prev)=>!prev);//current value can be obtained by prev 
+  }
   const handleSingIn=()=>{
     auth()
     .signInWithEmailAndPassword(email,password)
@@ -47,7 +52,8 @@ const Login = (props) => {
     })
   }
   return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container}>
+        {/* <Wavyheader customStyles={styles.svgCurve}></Wavyheader> */}
       <Text style={styles.welcome} variant="displaySmall">Welcome to Job Finder</Text>
       <Text style={styles.login} variant="headlineMedium">Login</Text>
       <SegmentedButtons
@@ -57,10 +63,13 @@ const Login = (props) => {
         buttons={[
 
           {
+            icon:'briefcase-search',
+            
             value: 'emp',
             label: 'Employee',
           },
           {
+            icon:'account-search',
             value: 'recruit',
             label: 'Recruiter',
           },
@@ -83,12 +92,18 @@ const Login = (props) => {
         value={email}
         onChangeText={text => setEmail(text)}
       />
+      <IconButton
+      icon={secure?'eye-off':'eye'}
+      iconColor='#6750a4'
+      style={{position:'relative',bottom:-63,left:330,marginTop:-50,zIndex:2}}
+      onPress={handleEye}
+      />
       <TextInput
       mode='outlined'
       style={styles.textBox2}
         placeholder='Enter password'
         label="Password"
-        secureTextEntry
+        secureTextEntry={secure}
         value={password}
         onChangeText={text => setPassword(text)}
       />
@@ -97,7 +112,7 @@ const Login = (props) => {
         Login
       </Button>
       <Button onPress={()=>props.navigation.navigate("SignUp")} style={{marginTop:20}}><Text style={{textAlign:'center',paddingTop:20}} variant='titleSmall'>Don't have an account? <Text style={{color:'#6750a4'}}>Sign Up</Text></Text></Button>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 const styles=StyleSheet.create({
@@ -128,6 +143,10 @@ const styles=StyleSheet.create({
     marginLeft:200,
     marginBottom:20,
     
+  },
+  svgCurve:{
+    position: 'absolute',
+    width: Dimensions.get('window').width
   }
 
 })

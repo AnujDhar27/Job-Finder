@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextInput, Text,Card} from 'react-native-paper';
+import { Button, TextInput, Text,Card,IconButton} from 'react-native-paper';
 import { View, StyleSheet,FlatList,ScrollView, PermissionsAndroid, SectionList } from 'react-native';
 import { textAlign } from '@mui/system';
 import {Alert} from 'react-native'
@@ -42,7 +42,7 @@ const SavedApplicants = (props) => {
       setUserData([...data1,...data2]);//merging of 2 arrays
     });
     return()=>unsubscribe();
-  })
+  },[])
   const handleUnfav=async(item)=>{
     const userDocRef=db.collection('users').doc(item.uid);
     await userDocRef.update({"isFav":null});
@@ -99,7 +99,14 @@ const SavedApplicants = (props) => {
   }
   return (
       <View style={styles.container}>
-      <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button>
+        <IconButton
+        icon="menu"
+        style={{top:60,left:-10,zIndex:1}}
+        size={30}
+        iconColor='#6750a4'
+        onPress={()=>props.navigation.openDrawer()}
+        />
+      {/* <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button> */}
       <Text variant="headlineMedium" style={{textAlign:'center',paddingTop:10,}}>Saved Applicants</Text>  
       <FlatList
         data={userData}

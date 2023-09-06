@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import {Card, Button, TextInput, Text,FAB,Menu,Divider,PaperProvider} from 'react-native-paper';
+import {Card, Button, TextInput, Text,FAB,Menu,Divider,PaperProvider,IconButton,useTheme} from 'react-native-paper';
 import { View, StyleSheet,KeyboardAvoidingView, Platform } from 'react-native';
 import { textAlign } from '@mui/system';
 import {useNavigation, useRoute,DrawerActions} from '@react-navigation/native'
@@ -19,7 +19,14 @@ import UserContext from './UserContext';
       <KeyboardAvoidingView style={styles.container}>
         
       <ScrollView>
-        <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20}} onPress={()=> props.navigation.openDrawer()}></Button> 
+        <IconButton
+        icon="menu"
+        style={{top:60,left:-10,}}
+        size={30}
+        iconColor='#6750a4'
+        onPress={()=>props.navigation.openDrawer()}
+        />
+        {/* <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20}} onPress={()=> props.navigation.openDrawer()}></Button>  */}
         <Searchbar
 
           placeholder="Search"
@@ -91,12 +98,13 @@ import UserContext from './UserContext';
 
   );
 };
-const styles=StyleSheet.create({
+const styles=StyleSheet.create(
+  {
   container:{
     flex:1,
     // justifyContent:'center',
     paddingHorizontal:20,
-    backgroundColor:'white' ,
+    backgroundColor: 'white' ,
   },
   welcome:{
     paddingBottom:5,
@@ -107,7 +115,7 @@ const styles=StyleSheet.create({
     
   },
   searchbar:{
-    marginTop:10,
+    marginTop:3,
     marginRight:30,
     marginLeft:50,
     

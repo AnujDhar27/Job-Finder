@@ -1,5 +1,5 @@
   import React, { useEffect, useState } from 'react';
-  import { Button, TextInput, Text,Card} from 'react-native-paper';
+  import { Button, TextInput, Text,Card,IconButton,Dialog} from 'react-native-paper';
   import { View, StyleSheet,FlatList, PermissionsAndroid, } from 'react-native';
   import { textAlign } from '@mui/system';
   import {Alert} from 'react-native'
@@ -10,7 +10,8 @@
 
 
 const Applications= (props) => {
-  const [icons,setIcons]=useState(0);
+  const [visible,setVisible]=useState(false);
+  const hideDialog=()=>setVisible(false);
   const db=firestore();
     const [userData,setUserData]=useState([]);
     useEffect(()=>{
@@ -41,7 +42,7 @@ const Applications= (props) => {
         setUserData([...data1,...data2]);//merging of 2 arrays
       });
       return()=>unsubscribe();
-    })
+    },[])//empty array to fire useffect only once, prevents app from crashing as it prevents infinite loop
     
     //console.log(userData);
     const handleFav=async(item)=>{
@@ -85,13 +86,15 @@ const Applications= (props) => {
           .fetch('GET', val, {})
           .then((res) => {
     // the temp file path
-    console.log('The file saved to ', res.path())
-    Alert.alert(
-      'Resume Download Status',
-      'Resume Downloaded Successfully',
-      [{text:'OK',onPress:()=>console.log('OK pressed')}]
 
-    );
+    console.log('The file saved to ', res.path())
+    setVisible(true);
+    // Alert.alert(
+    //   'Resume Download Status',
+    //   'Resume Downloaded Successfully',
+    //   [{text:'OK',onPress:()=>console.log('OK pressed')}]
+
+    // );
   })
         } else {
           console.log('Storage permission denied');
@@ -103,7 +106,14 @@ const Applications= (props) => {
   return (
 
       <View style={styles.container}>
-      <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button>
+        <IconButton
+        icon="menu"
+        style={{top:60,left:-10,zIndex:1}}
+        size={30}
+        iconColor='#6750a4'
+        onPress={()=>props.navigation.openDrawer()}
+        />
+      {/* <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button> */}
 
       <Text variant="headlineLarge" style={{textAlign:'center',paddingTop:10,}}>Applications</Text>  
       <FlatList
@@ -127,6 +137,16 @@ const Applications= (props) => {
             </Card>
         )}
         />
+        <Dialog visible={visible} onDismiss={hideDialog}>
+         <Dialog.Icon icon='download-circle' size={40}/>
+          <Dialog.Title style={{justifyContent:'center',textAlign:'center'}}><Text variant='headlineMedium'>Resume Download Status</Text></Dialog.Title>
+          <Dialog.Content>
+            <Text variant='titleSmall' style={{textAlign:'center'}}>Resume Downloaded Successfully</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>OK</Button>
+          </Dialog.Actions>
+        </Dialog>
     </View>
 
   );

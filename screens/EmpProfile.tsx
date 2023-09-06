@@ -1,6 +1,6 @@
 
 import React, { useEffect,useContext, useState } from 'react';
-import { Button, TextInput, Text, Avatar,FAB} from 'react-native-paper';
+import { Button, TextInput, Text, Avatar,FAB,IconButton} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
@@ -23,7 +23,9 @@ const EmpProfile = (props) => {
   const [type,setType]=useState('');
   const [validity,setValidity]=useState('-');
   const user=firebase.auth().currentUser;
-  const [count,setCount]=useState(0);
+  const [themes,setThemes]=useState(true);//true= light, false=dark
+
+
   if(user)
   {
     useEffect(()=>{
@@ -31,7 +33,17 @@ const EmpProfile = (props) => {
       .collection('users')
       .doc(user.uid)
       .onSnapshot((documentSnapshot)=>{
-            
+            // if(documentSnapshot.data().theme===true){
+            // console.log('yes');
+            // if(themes!=true)
+            // setThemes(documentSnapshot.data().theme);
+            // }
+            // else if(documentSnapshot.data().theme===false)
+            // {
+            //   console.log(documentSnapshot.data().theme);
+            //   if(themes!=false)
+            //   setThemes(documentSnapshot.data().theme);
+            // }
             if(documentSnapshot.data().payID!=null)
             {
               setType('Premium');              
@@ -52,13 +64,22 @@ const EmpProfile = (props) => {
                }
               
               }
-            else{
+            else if(documentSnapshot.data().payID===null){
               setType('Normal');
             }
+            
         });
         return()=>unsubscribe();
-      });
+      },[]);
       
+    }
+    const handleTheme=async()=>{
+      //console.log('Pressed');
+      setThemes((curr)=>!curr);
+      // if(user){
+      // const userdocRef=db.collection('users').doc(user.uid);
+      // await userdocRef.update({'theme':themes})
+      // }
     }
   const handleProfilePic=async()=>{
     try{
@@ -130,19 +151,36 @@ RazorpayCheckout.open(options).then(async(data)=>{
       console.log('error while sign out',error);
     }
   };
+
   return (
-      <View style={styles.container}>
-        <Button  icon="home" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.navigate('Home')}></Button> 
-      <Text style={styles.welcome} variant="displaySmall">Profile</Text>
+      <View style={{flex:1,
+        paddingHorizontal:20,
+        backgroundColor:themes?"white":'#121212' ,}}>
+      <IconButton
+      icon="home"
+      size={30}
+      iconColor='#6750a4'
+      style={{position:'relative',top:60,paddingRight:20,zIndex:1}}
+      onPress={()=> props.navigation.navigate('Home')}
+      />
+      <IconButton
+      icon={themes?"weather-sunny":"moon-waning-crescent"}
+      size={30}
+      iconColor='#6750a4'
+      style={{position:'relative',top:8,left:350,zIndex:1}}
+      onPress={handleTheme}
+      />
+        {/* <Button  icon="home" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.navigate('Home')}></Button>  */}
+      <Text style={{textAlign:'center',color:themes?'black':'white',paddingTop:10,}} variant="displaySmall">Profile</Text>
       <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
 
       <Avatar.Image style={{marginLeft:100,marginTop:40,}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
      
-     <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40}} variant='titleLarge'>Name: <Text>{userName}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Email ID: <Text>{userEmail}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Role: <Text>{userRole}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Type: <Text>{type}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge' >Next Due: <Text>{validity}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40,color:themes?'black':'white'}} variant='titleLarge'>Name: <Text style={{color:themes?'black':'white'}}>{userName}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge'>Email ID: <Text style={{color:themes?'black':'white'}}>{userEmail}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge'>Role: <Text style={{color:themes?'black':'white'}}>{userRole}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge'>Type: <Text style={{color:themes?'black':'white'}}>{type}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge' >Next Due: <Text style={{color:themes?'black':'white'}}>{validity}</Text></Text>
      <Button mode='contained-tonal' rippleColor="#FF000020" onPress={handlePayment} disabled={type==='Premium'?true:false}> Go Premium</Button>
         <Button style={{marginTop:20}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
           Sign Out
@@ -152,26 +190,8 @@ RazorpayCheckout.open(options).then(async(data)=>{
   );
 };
 const styles=StyleSheet.create({
-  container:{
-    flex:1,
-    //justifyContent:'center',
-    // paddingTop:40,
-    paddingHorizontal:20,
-    backgroundColor:'white' ,
-  },
-  textBox1:{
-    paddingBottom: 10,
-    marginBottom: 20,
-  },
-
-  welcome:{
-    textAlign:'center',
-    // paddingLeft:200,
-    paddingTop:10,
-  },
   login:{
     paddingBottom:20,
-    
   },
 })
 export default EmpProfile;

@@ -9,6 +9,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Mycontacts = (props) => {
   const [userDetails,setUserDetails]=useState([]);
+  const [oldData,setOldData]=useState([]);
   useEffect(()=>{
     const unsub=firestore()
     .collection('users')
@@ -25,30 +26,46 @@ const Mycontacts = (props) => {
       }
       });
       setUserDetails(data);
+      setOldData(data);
     });
     return()=>unsub();
-  })
+  },[]);//passing empty array in useEffect fires itself only once
 
   const [searchQuery,setSearchQuery]=useState('');
-  const onChangeSearch=(query)=>{
-    setSearchQuery(query)
-    // let tempList=userDetails.filter(item=>{
-    //   return item.name.toLowerCase().indexOf(query.toLowerCase())>1;
-    // })
+
+  const handleSearch=text=>{
+    if(text!==''){
+      setUserDetails([]);
+      let tempList=userDetails.filter(item=>{
+      return item.name.toLowerCase().indexOf(text.toLowerCase())>-1;
+     });
+     setUserDetails(tempList);
+    }
+    else{
+      setUserDetails(oldData)
+    }
+    //console.log("hi");
   };
 
   return (
       <View style={styles.container}>
-        <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button>
+        <IconButton
+        icon="menu"
+        style={{top:60,left:-10,zIndex:1}}
+        size={30}
+        iconColor='#6750a4'
+        onPress={()=>props.navigation.openDrawer()}
+        />
+        {/* <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button> */}
       <Text style={{textAlign:'center',paddingTop:10,}} variant="headlineLarge">Contacts</Text>
       
       <Searchbar
-              placeholder="Search"
-              onChangeText={onChangeSearch}
-              value={searchQuery}
-              style={styles.searchbar}
-              
-/>
+      placeholder="Search"
+      onChangeText={text=>{handleSearch(text); setSearchQuery(text);}}
+      value={searchQuery}
+      style={styles.searchbar}
+      />
+
       <FlatList
       data={userDetails}
       keyExtractor={(item)=>item.id}

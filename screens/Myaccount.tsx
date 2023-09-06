@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Button, TextInput, Text, Avatar,FAB} from 'react-native-paper';
+import { Button, TextInput, Text, Avatar,FAB,IconButton} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
@@ -53,7 +53,14 @@ const Myaccount = (props) => {
   };
   return (
       <View style={styles.container}>
-        <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.openDrawer()}></Button> 
+        <IconButton
+        icon="menu"
+        style={{top:60,left:-10,zIndex:1}}
+        size={30}
+        iconColor='#6750a4'
+        onPress={()=>props.navigation.openDrawer()}
+        />
+        {/* <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.openDrawer()}></Button>  */}
       <Text style={styles.welcome} variant="displaySmall">Profile</Text>
       <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
 

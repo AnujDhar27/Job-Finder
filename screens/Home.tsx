@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import {Card, Button, TextInput, Text} from 'react-native-paper';
+import {Card, Button, IconButton, Text,} from 'react-native-paper';
 import { View, StyleSheet,KeyboardAvoidingView, Platform ,Image} from 'react-native';
 import { textAlign } from '@mui/system';
 import {useRoute} from '@react-navigation/native'
@@ -8,6 +8,7 @@ import { Padding } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 import { ScrollView } from 'react-native-gesture-handler';
 import UserContext from './UserContext';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const Home = (props) => {
   const route=useRoute();
@@ -23,7 +24,14 @@ const Home = (props) => {
               onChangeText={onChangeSearch}
               value={searchQuery}
               style={styles.searchbar}/>
-              <Button   mode='contained-tonal' onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}} >p</Button>
+              <IconButton
+              icon="account"
+              size={30}
+              iconColor='#6750a4'
+              onPress={()=>props.navigation.navigate('EmpProfile')}
+              style={{position:'relative',left:320,bottom:50,width:50,height:45,}}
+              />
+              {/* <Button   mode='contained-tonal' icon="account" onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}} ></Button> */}
       <ScrollView>
         
       <Text style={styles.welcome} variant="displaySmall">Hello</Text>
