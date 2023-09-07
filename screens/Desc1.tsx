@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Button, TextInput, Text} from 'react-native-paper';
 import { View, StyleSheet,Image,TouchableOpacity } from 'react-native';
 import { textAlign } from '@mui/system';
@@ -6,17 +6,28 @@ import auth from '@react-native-firebase/auth'
 import {Alert} from 'react-native'
 import   '@react-navigation/native'
 import { ScrollView } from 'react-native-gesture-handler';
-const Desc1 = (props) => {
+import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app'
 
+const Desc1 = (props) => {
+  const [cname,setCname]=useState('Company Name');
+  const [role,setRole]=useState('Job Role');
+  const [loc,setLoc]=useState('Location');
+  const [sal,setSal]=useState('Salary');
+  const [type,setType]=useState('Job Type');
+  const [pos,setPos]=useState('Position');
+  const [des,setDes]=useState('Description');
+  //const [userdata,setUserData]=useState([]);
   return (
+
       <ScrollView style={styles.container}>
         
-        <Text variant='headlineLarge' style={{textAlign:'center',padding:50,paddingLeft:50}} > Apple </Text>
+        <Text variant='headlineLarge' style={{textAlign:'center',padding:50,paddingLeft:50}} > cname </Text>
         <Image style={{width:230,position:'relative',bottom:160,left:80}} source={require('../src/logo1.png')} resizeMode='contain'/>
-      <Text variant='headlineSmall' style={{position:'relative',bottom:250,textAlign:'center',fontWeight:'bold'}}>Product Designer</Text>
+      <Text variant='headlineSmall' style={{position:'relative',bottom:250,textAlign:'center',fontWeight:'bold'}}>role</Text>
 
-      <Text variant='labelLarge' style={{position:'relative',left:35,bottom:200,}}>Apple</Text>
-      <Text variant='labelLarge' style={{position:'relative',left:150,bottom:220,}}>California</Text>
+      <Text variant='labelLarge' style={{position:'relative',left:35,bottom:200,}}>cname</Text>
+      <Text variant='labelLarge' style={{position:'relative',left:150,bottom:220,}}>location</Text>
       <Text variant='labelLarge' style={{position:'relative',left:280,bottom:240}}>1 day ago</Text>
 
       <Image resizeMode='contain' style={{position:'relative',width:80,left:10,bottom:280}} source={require('../src/newsal.png')}/>
@@ -27,7 +38,7 @@ const Desc1 = (props) => {
       <Text variant='labelLarge' style={{left:150,position:'relative',bottom:1150}}>Job Type</Text>
       <Text variant='labelLarge' style={{left:290,position:'relative',bottom:1170}}>Position</Text>
 
-      <Text variant='labelLarge' style={{left:20,position:'relative',bottom:1160}}>$10K-$12K</Text> 
+      <Text variant='labelLarge' style={{left:20,position:'relative',bottom:1160}}>salary</Text> 
       <Text variant='labelLarge' style={{left:150,position:'relative',bottom:1180}}>Part Time</Text> 
       <Text variant='labelLarge' style={{left:300,position:'relative',bottom:1200}}>Junior</Text>
 

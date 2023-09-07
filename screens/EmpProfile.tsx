@@ -23,9 +23,7 @@ const EmpProfile = (props) => {
   const [type,setType]=useState('');
   const [validity,setValidity]=useState('-');
   const user=firebase.auth().currentUser;
-  const [themes,setThemes]=useState(true);//true= light, false=dark
-
-
+  const [themes,setThemes]=useState("");
   if(user)
   {
     useEffect(()=>{
@@ -33,17 +31,21 @@ const EmpProfile = (props) => {
       .collection('users')
       .doc(user.uid)
       .onSnapshot((documentSnapshot)=>{
-            // if(documentSnapshot.data().theme===true){
-            // console.log('yes');
-            // if(themes!=true)
-            // setThemes(documentSnapshot.data().theme);
-            // }
-            // else if(documentSnapshot.data().theme===false)
-            // {
-            //   console.log(documentSnapshot.data().theme);
-            //   if(themes!=false)
-            //   setThemes(documentSnapshot.data().theme);
-            // }
+     if(documentSnapshot.data().uiTheme==="light")
+           setThemes("light");
+      if(documentSnapshot.data().uiTheme==="dark")
+          setThemes("dark");
+      });
+      return()=>unsubscribe();
+    },[])
+}
+  if(user)
+  {
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
             if(documentSnapshot.data().payID!=null)
             {
               setType('Premium');              
@@ -51,6 +53,7 @@ const EmpProfile = (props) => {
               setValidity(validDate);
               const currDate=new Date();
               const newCurrDate=moment(currDate).format('DD/MM/YYYY');
+              
               if(moment(newCurrDate).isSameOrAfter(validDate))
                {
                  console.log('INvalid');
@@ -62,24 +65,31 @@ const EmpProfile = (props) => {
                else{
                  console.log('valid');
                }
-              
               }
-            else if(documentSnapshot.data().payID===null){
+            // else (documentSnapshot.data().payID===null)
+            else
               setType('Normal');
-            }
-            
         });
         return()=>unsubscribe();
       },[]);
       
     }
-    const handleTheme=async()=>{
+    const handleTheme=()=>{
       //console.log('Pressed');
-      setThemes((curr)=>!curr);
-      // if(user){
-      // const userdocRef=db.collection('users').doc(user.uid);
-      // await userdocRef.update({'theme':themes})
-      // }
+      const user1=firebase.auth().currentUser
+      if(user){
+        if(themes==='light'){
+       const userdocRef=db.collection('users').doc(user.uid);
+        setThemes("dark");
+        userdocRef.update({'uiTheme':"dark"});
+      }
+      else if(themes==='dark')
+      {
+        const userdocRef=db.collection('users').doc(user.uid);
+        setThemes("light");
+        userdocRef.update({'uiTheme':"light"});
+      }
+      }
     }
   const handleProfilePic=async()=>{
     try{
@@ -155,7 +165,7 @@ RazorpayCheckout.open(options).then(async(data)=>{
   return (
       <View style={{flex:1,
         paddingHorizontal:20,
-        backgroundColor:themes?"white":'#121212' ,}}>
+        backgroundColor:themes==="light"?"white":'#121212' ,}}>
       <IconButton
       icon="home"
       size={30}
@@ -164,23 +174,23 @@ RazorpayCheckout.open(options).then(async(data)=>{
       onPress={()=> props.navigation.navigate('Home')}
       />
       <IconButton
-      icon={themes?"weather-sunny":"moon-waning-crescent"}
+      icon={themes==="light"?"weather-sunny":"moon-waning-crescent"}
       size={30}
       iconColor='#6750a4'
       style={{position:'relative',top:8,left:350,zIndex:1}}
       onPress={handleTheme}
       />
         {/* <Button  icon="home" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.navigate('Home')}></Button>  */}
-      <Text style={{textAlign:'center',color:themes?'black':'white',paddingTop:10,}} variant="displaySmall">Profile</Text>
+      <Text style={{textAlign:'center',color:themes==="light"?'black':'white',paddingTop:10,}} variant="displaySmall">Profile</Text>
       <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
 
       <Avatar.Image style={{marginLeft:100,marginTop:40,}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
      
-     <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40,color:themes?'black':'white'}} variant='titleLarge'>Name: <Text style={{color:themes?'black':'white'}}>{userName}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge'>Email ID: <Text style={{color:themes?'black':'white'}}>{userEmail}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge'>Role: <Text style={{color:themes?'black':'white'}}>{userRole}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge'>Type: <Text style={{color:themes?'black':'white'}}>{type}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20,color:themes?'black':'white'}} variant='titleLarge' >Next Due: <Text style={{color:themes?'black':'white'}}>{validity}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40,color:themes==="light"?'black':'white'}} variant='titleLarge'>Name: <Text style={{color:themes==="light"?'black':'white'}}>{userName}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?'black':'white'}} variant='titleLarge'>Email ID: <Text style={{color:themes==="light"?'black':'white'}}>{userEmail}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?'black':'white'}} variant='titleLarge'>Role: <Text style={{color:themes==="light"?'black':'white'}}>{userRole}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?'black':'white'}} variant='titleLarge'>Type: <Text style={{color:themes==="light"?'black':'white'}}>{type}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?'black':'white'}} variant='titleLarge' >Next Due: <Text style={{color:themes==="light"?'black':'white'}}>{validity}</Text></Text>
      <Button mode='contained-tonal' rippleColor="#FF000020" onPress={handlePayment} disabled={type==='Premium'?true:false}> Go Premium</Button>
         <Button style={{marginTop:20}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
           Sign Out

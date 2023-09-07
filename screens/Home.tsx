@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useEffect } from 'react';
 import {Card, Button, IconButton, Text,} from 'react-native-paper';
 import { View, StyleSheet,KeyboardAvoidingView, Platform ,Image} from 'react-native';
 import { textAlign } from '@mui/system';
@@ -8,17 +8,36 @@ import { Padding } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 import { ScrollView } from 'react-native-gesture-handler';
 import UserContext from './UserContext';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
 
 const Home = (props) => {
+  const db=firestore();
   const route=useRoute();
   const {userName}=useContext(UserContext);
-  //const {name}=route.params;
   const [searchQuery,setSearchQuery]=useState('');
+  const user=firebase.auth().currentUser;
+  const [themes,setThemes]=useState("");
+    if(user)
+    {
+      useEffect(()=>{
+        const unsubscribe=firestore()
+        .collection('users')
+        .doc(user.uid)
+        .onSnapshot((documentSnapshot)=>{
+       if(documentSnapshot.data().uiTheme==="light")
+             setThemes("light");
+        if(documentSnapshot.data().uiTheme==="dark")
+            setThemes("dark");
+        });
+        return()=>unsubscribe();
+      },[])
+  }
+
   const onChangeSearch=(query)=>{setSearchQuery(query)};
   return (
 
-      <KeyboardAvoidingView style={styles.container}>
+      <KeyboardAvoidingView style={{flex:1,paddingHorizontal:20,backgroundColor:themes==='light'?'white':"#121212"}}>
               <Searchbar
               placeholder="Search"
               onChangeText={onChangeSearch}
@@ -34,10 +53,10 @@ const Home = (props) => {
               {/* <Button   mode='contained-tonal' icon="account" onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}} ></Button> */}
       <ScrollView>
         
-      <Text style={styles.welcome} variant="displaySmall">Hello</Text>
-      <Text variant="displaySmall" style={{fontWeight:'bold',}}>{userName}</Text>
+      <Text style={{ paddingBottom:5,color:themes==='light'?'black':'white'}} variant="displaySmall">Hello</Text>
+      <Text variant="displaySmall" style={{fontWeight:'bold', color:themes==='light'?'black':'white'}}>{userName}</Text>
       
-      <Text variant='titleMedium' style={{fontWeight:'bold',paddingTop:20,marginBottom:320}}>Find your job</Text>
+      <Text variant='titleMedium' style={{fontWeight:'bold',paddingTop:20,marginBottom:320,color:themes==='light'?'black':'white'}}>Find your job</Text>
       
 
       <Card style={styles.card1}>
@@ -72,7 +91,7 @@ const Home = (props) => {
           <Text variant='titleSmall' style={{textAlign:'center',bottom:10}}>Part Time</Text>
         </Card.Content>
         </Card>
-      <Text variant='headlineMedium' style={styles.recent} >Recent Job List</Text>
+      <Text variant='headlineMedium' style={{fontWeight:'bold',marginBottom:20,color:themes==='light'?'black':'white'}} >Recent Job List</Text>
       <Card style={styles.card4}>
         <Card.Content>
          
@@ -94,12 +113,7 @@ const Home = (props) => {
   );
 };
 const styles=StyleSheet.create({
-  container:{
-    flex:1,
-    // justifyContent:'center',
-    paddingHorizontal:20,
-    backgroundColor:'white' ,
-  },
+
   welcome:{
     paddingBottom:5,
   },
