@@ -6,10 +6,35 @@ import auth from '@react-native-firebase/auth'
 import {Alert} from 'react-native'
 import firestore from '@react-native-firebase/firestore'
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import firebase from '@react-native-firebase/app'
 
 const Mycontacts = (props) => {
   const [userDetails,setUserDetails]=useState([]);
   const [oldData,setOldData]=useState([]);
+  const [themes,setThemes]=useState("");
+
+  try{
+    const user=firebase.auth().currentUser;
+  if(user)
+  {
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
+     if(documentSnapshot.data().uiTheme==="light")
+           setThemes("light");
+      if(documentSnapshot.data().uiTheme==="dark")
+          setThemes("dark");
+      });
+      return()=>unsubscribe();
+    },[])
+}
+}
+catch(error)
+{
+console.log(error);
+}
   useEffect(()=>{
     const unsub=firestore()
     .collection('users')
@@ -46,9 +71,8 @@ const Mycontacts = (props) => {
     }
     //console.log("hi");
   };
-
   return (
-      <View style={styles.container}>
+      <View style={{flex:1,paddingHorizontal:20,backgroundColor:themes==='light'?'white':'#121212' ,}}>
         <IconButton
         icon="menu"
         style={{top:60,left:-10,zIndex:1}}
@@ -57,7 +81,7 @@ const Mycontacts = (props) => {
         onPress={()=>props.navigation.openDrawer()}
         />
         {/* <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button> */}
-      <Text style={{textAlign:'center',paddingTop:10,}} variant="headlineLarge">Contacts</Text>
+      <Text style={{textAlign:'center',paddingTop:10,color:themes==='light'?'black':'white'}} variant="headlineLarge">Contacts</Text>
       
       <Searchbar
       placeholder="Search"

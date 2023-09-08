@@ -1,6 +1,6 @@
 import React, { useContext, useState,useEffect } from 'react';
 import {Card, Button, IconButton, Text,} from 'react-native-paper';
-import { View, StyleSheet,KeyboardAvoidingView, Platform ,Image} from 'react-native';
+import { View, StyleSheet,KeyboardAvoidingView, Platform ,Image,FlatList} from 'react-native';
 import { textAlign } from '@mui/system';
 import {useRoute} from '@react-navigation/native'
 import { Searchbar } from 'react-native-paper';
@@ -13,11 +13,56 @@ import firestore from '@react-native-firebase/firestore';
 
 const Home = (props) => {
   const db=firestore();
-  const route=useRoute();
   const {userName}=useContext(UserContext);
   const [searchQuery,setSearchQuery]=useState('');
   const user=firebase.auth().currentUser;
+  const [userData,setuserData]=useState([]);
   const [themes,setThemes]=useState("");
+  try{
+    const user=firebase.auth().currentUser;
+    if(user)
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('recruit')
+      .onSnapshot((querySnapshot)=>{
+        const data=[];
+        querySnapshot.forEach((documentSnapshot)=>{
+          if(documentSnapshot.exists)
+              data.push({
+                id:documentSnapshot.id,
+                ...documentSnapshot.data(),
+              });
+        });
+        setuserData(data);
+      });
+      return()=>unsubscribe();
+    },[])
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
+    console.log(userData);
+  // useEffect(()=>{
+  //   const unsubscribe=firestore()
+  //   .collection('recruit')
+  //   .get()
+  //   .then(querySnapshot=>{
+  //     querySnapshot.forEach(documentSnapshot=>{
+  //       const data=[];
+  //       if(documentSnapshot.data().length>0)
+  //       data.push({
+  //         id:documentSnapshot.id,
+  //         ...documentSnapshot.data(),
+  //       })
+        
+  //       console.log(documentSnapshot.data());
+  //       setuserData(data);
+
+  //     });
+  //   });
+  // })
+
     if(user)
     {
       useEffect(()=>{
@@ -51,7 +96,7 @@ const Home = (props) => {
               style={{position:'relative',left:320,bottom:50,width:50,height:45,}}
               />
               {/* <Button   mode='contained-tonal' icon="account" onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}} ></Button> */}
-      <ScrollView>
+      
         
       <Text style={{ paddingBottom:5,color:themes==='light'?'black':'white'}} variant="displaySmall">Hello</Text>
       <Text variant="displaySmall" style={{fontWeight:'bold', color:themes==='light'?'black':'white'}}>{userName}</Text>
@@ -92,7 +137,22 @@ const Home = (props) => {
         </Card.Content>
         </Card>
       <Text variant='headlineMedium' style={{fontWeight:'bold',marginBottom:20,color:themes==='light'?'black':'white'}} >Recent Job List</Text>
-      <Card style={styles.card4}>
+      <FlatList
+        data={userData}
+        keyExtractor={(item) => item.id}
+        
+        renderItem={({ item }) => (
+          <Card  style={styles.card4}>
+          <View style={{padding:10,}}>
+            <Text variant='titleLarge'> {item.cname}</Text>
+            <Text variant='titleMedium'> {item.JobRole}</Text>
+            <Text variant='titleSmall'> Rs. {item.Salary} </Text>
+            <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1",{userData},)}>Check Details</Button>
+            </View>
+            </Card>
+        )}
+        />
+      {/* <Card style={styles.card4}>
         <Card.Content>
          
           <Text variant='titleLarge' >Product Designer</Text>
@@ -107,8 +167,7 @@ const Home = (props) => {
           <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1")}>Apply Now</Button>
         </Card.Content>
       </Card>
-      
-      </ScrollView>
+       */}
     </KeyboardAvoidingView>
   );
 };
@@ -133,29 +192,24 @@ const styles=StyleSheet.create({
   },
   card1:{
     position:'absolute',
-    paddingTop:0,
-    paddingBottom:100,
-   
-    bottom:400,
-    width:'45%',
+    top:330,
+    left:20,
+    bottom:30,
+    width:170,
+    height:240,
   },
   card2:{
     position:'absolute',
-    left:190,
-    bottom:525,
-    paddingTop:0,
-    paddingBottom:0,
+    left:200,
+    bottom:480,
     width:'50%',
     height:105,
-
 
   },
   card3:{
     position:'absolute',
-    left:190,
-    bottom:400,
-    paddingTop:0,
-    paddingBottom:0,
+    left:200,
+    bottom:350,
     width:'50%',
   },
   card4:{

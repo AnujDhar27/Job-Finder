@@ -13,6 +13,7 @@ const Applications= (props) => {
   const [visible,setVisible]=useState(false);
   const hideDialog=()=>setVisible(false);
   const db=firestore();
+  const [themes,setThemes]=useState("");
     const [userData,setUserData]=useState([]);
     useEffect(()=>{
       const unsubscribe=firestore()
@@ -103,9 +104,31 @@ const Applications= (props) => {
         console.warn(err);
       }
     }
+    try{
+      const user=firebase.auth().currentUser;
+    if(user)
+    {
+      useEffect(()=>{
+        const unsubscribe=firestore()
+        .collection('users')
+        .doc(user.uid)
+        .onSnapshot((documentSnapshot)=>{
+       if(documentSnapshot.data().uiTheme==="light")
+             setThemes("light");
+        if(documentSnapshot.data().uiTheme==="dark")
+            setThemes("dark");
+        });
+        return()=>unsubscribe();
+      },[])
+  }
+}
+catch(error)
+{
+  console.log(error);
+}
   return (
 
-      <View style={styles.container}>
+      <View style={{flex:1,paddingHorizontal:20,backgroundColor:themes==='light'?'white':'#121212' ,}}>
         <IconButton
         icon="menu"
         style={{top:60,left:-10,zIndex:1}}
@@ -115,7 +138,7 @@ const Applications= (props) => {
         />
       {/* <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button> */}
 
-      <Text variant="headlineLarge" style={{textAlign:'center',paddingTop:10,}}>Applications</Text>  
+      <Text variant="headlineLarge" style={{textAlign:'center',paddingTop:10,color:themes==='light'?'black':'white'}}>Applications</Text>  
       <FlatList
         data={userData}
         keyExtractor={(item) => item.id}
@@ -154,8 +177,6 @@ const Applications= (props) => {
 const styles=StyleSheet.create({
   container:{
     flex:1,
-    // paddingTop:40,
-    // justifyContent:'center'
     paddingHorizontal:20,
     backgroundColor:'white' ,
   },

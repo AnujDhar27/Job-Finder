@@ -13,6 +13,7 @@ const SavedApplicants = (props) => {
   const db=firestore();
   const [userData,setUserData]=useState([]);
   const [icons,setIcons]=useState(0);
+  const [themes,setThemes]=useState("");
 
   useEffect(()=>{
     const unsubscribe=firestore()
@@ -97,8 +98,30 @@ const SavedApplicants = (props) => {
       console.warn(err);
     }
   }
+  try{
+    const user=firebase.auth().currentUser;
+  if(user)
+  {
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
+     if(documentSnapshot.data().uiTheme==="light")
+           setThemes("light");
+      if(documentSnapshot.data().uiTheme==="dark")
+          setThemes("dark");
+      });
+      return()=>unsubscribe();
+    },[])
+}
+}
+catch(error)
+{
+console.log(error);
+}
   return (
-      <View style={styles.container}>
+      <View style={{flex:1,paddingHorizontal:20,backgroundColor:themes==='light'?'white':'#121212' ,}}>
         <IconButton
         icon="menu"
         style={{top:60,left:-10,zIndex:1}}
@@ -107,7 +130,7 @@ const SavedApplicants = (props) => {
         onPress={()=>props.navigation.openDrawer()}
         />
       {/* <Button icon="menu" style={{width:2,paddingRight:20,top:50,zIndex:1}} onPress={()=>props.navigation.openDrawer()}></Button> */}
-      <Text variant="headlineMedium" style={{textAlign:'center',paddingTop:10,}}>Saved Applicants</Text>  
+      <Text variant="headlineMedium" style={{textAlign:'center',paddingTop:10,color:themes==='light'?'black':'white'}}>Saved Applicants</Text>  
       <FlatList
         data={userData}
         keyExtractor={(item) => item.id}
@@ -134,11 +157,7 @@ const SavedApplicants = (props) => {
 };
 const styles=StyleSheet.create({
   container:{
-    flex:1,
-    // paddingTop:40,
-    // justifyContent:'center'
-    paddingHorizontal:20,
-    backgroundColor:'white' ,
+
   },
   buttons:{
     width:300,

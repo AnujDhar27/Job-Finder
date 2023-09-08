@@ -7,7 +7,6 @@ import auth from '@react-native-firebase/auth'
 import UserContext from './UserContext';
 import moment from 'moment';
 import firestore from '@react-native-firebase/firestore';
-import Wavyheader from './Wavyheader';
 const Login = (props) => {
   const {setUserName}=useContext(UserContext);
   const {setUserEmail}=useContext(UserContext);
@@ -53,7 +52,9 @@ const Login = (props) => {
   }
   return (
       <KeyboardAvoidingView style={styles.container}>
+
         {/* <Wavyheader customStyles={styles.svgCurve}></Wavyheader> */}
+        
       <Text style={styles.welcome} variant="displaySmall">Welcome to Job Finder</Text>
       <Text style={styles.login} variant="headlineMedium">Login</Text>
       <SegmentedButtons
@@ -144,10 +145,6 @@ const styles=StyleSheet.create({
     marginBottom:20,
     
   },
-  svgCurve:{
-    position: 'absolute',
-    width: Dimensions.get('window').width
-  }
 
 })
 export default Login;

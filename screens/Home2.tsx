@@ -14,39 +14,59 @@ import firebase from '@react-native-firebase/app'
 
     const Home2Screen = (props) => {
       const {userName}=useContext(UserContext);
-      const [userData,setUserData]=useState([]);
-     const route=useRoute();  
+      const [userData,setUserData]=useState([]); 
       const [searchQuery,setSearchQuery]=useState('');
+      const [themes,setThemes]=useState("");
       const onChangeSearch=(query)=>{setSearchQuery(query)};
+      try{
+        const user=firebase.auth().currentUser;
+      if(user)
+      {
+        useEffect(()=>{
+          const unsubscribe=firestore()
+          .collection('users')
+          .doc(user.uid)
+          .onSnapshot((documentSnapshot)=>{
+         if(documentSnapshot.data().uiTheme==="light")
+               setThemes("light");
+          if(documentSnapshot.data().uiTheme==="dark")
+              setThemes("dark");
+          });
+          return()=>unsubscribe();
+        },[])
+    }
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
       try{
       const user=firebase.auth().currentUser;
       if(user)
       useEffect(()=>{
-        const unsubscribe=firestore()
-        .collection('recuit')
+        firestore()
+        .collection('recruit')
         .doc(user.uid)
-        .collection('b5b361ae-b7b0-4a0f-a4b8-e8e506a726a2')
-        .onSnapshot((querySnapshot)=>{
+        .get()
+        .then(documentSnapshot=>{
           const data=[];
-          
-          querySnapshot.forEach((documentSnapshot)=>{
-                data.push({
-                  id:documentSnapshot.id,
-                  ...documentSnapshot.data(),
-                });
-          });
+          if(documentSnapshot.exists)
+          data.push({
+            id:documentSnapshot.id,
+            ...documentSnapshot.data(),
+          })
           setUserData(data);
-        });
-        return()=>unsubscribe();
+        })
       },[])
     }
     catch(error)
     {
       console.log(error);
     }
-      console.log(userData[0]);
+      console.log(userData);
+    
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      <KeyboardAvoidingView style={{flex:1,paddingHorizontal:20,backgroundColor:themes==='light'?"white":"#121212"}}>
         
         <IconButton
         icon="menu"
@@ -64,10 +84,10 @@ import firebase from '@react-native-firebase/app'
           style={styles.searchbar}
         />
 
-      <Text style={styles.welcome} variant="displaySmall">Hello</Text>
-      <Text variant="displaySmall" style={{fontWeight:'bold',}}>{userName}</Text>
+      <Text style={{paddingBottom:5,paddingTop:40,color:themes==="light"?"black":"white"}} variant="displaySmall">Hello</Text>
+      <Text variant="displaySmall" style={{fontWeight:'bold',color:themes==="light"?"black":"white"}}>{userName}</Text>
       
-      <Text variant='titleMedium' style={{paddingBottom:20,paddingTop:10,}}>Jobs Posted by you</Text>
+      <Text variant='titleMedium' style={{paddingBottom:20,paddingTop:10,color:themes==="light"?"black":"white"}}>Jobs Posted by you</Text>
       
       <FlatList
         data={userData}
@@ -78,7 +98,7 @@ import firebase from '@react-native-firebase/app'
             
             <Text variant='titleLarge'> {item.JobRole}</Text>
             <Text variant='titleSmall'> Rs. {item.Salary} </Text>
-            <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1")}>Check Details</Button>
+            <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc2")}>Check Details</Button>
             </View>
             </Card>
         )}
@@ -139,22 +159,13 @@ import firebase from '@react-native-firebase/app'
 };
 const styles=StyleSheet.create(
   {
-  container:{
-    flex:1,
-    // justifyContent:'center',
-    paddingHorizontal:20,
-    backgroundColor: 'white' ,
-  },
   welcome:{
-    paddingBottom:5,
-    paddingTop:40,
+
   },
   searchbar:{
     marginTop:3,
     marginRight:30,
     marginLeft:50,
-    
-    
   },
   apply:{
     marginLeft:220,

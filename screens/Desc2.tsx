@@ -3,15 +3,14 @@ import { Button, TextInput, Text,IconButton} from 'react-native-paper';
 import { View, StyleSheet,Image,TouchableOpacity } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
-import {Alert} from 'react-native';
-import   '@react-navigation/native';
-import { useRoute } from '@react-navigation/native';
+import {Alert} from 'react-native'
+import   '@react-navigation/native'
 import { ScrollView } from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
-import firebase from '@react-native-firebase/app';
+import firebase from '@react-native-firebase/app'
 import UserContext from './UserContext';
 
-const Desc1 = (props) => {
+const Desc2 = (props) => {
   const [cname,setCname]=useState('Company Name');
   const [role,setRole]=useState('Job Role');
   const [loc,setLoc]=useState('Location');
@@ -20,48 +19,40 @@ const Desc1 = (props) => {
   const [pos,setPos]=useState('Position');
   const [des,setDes]=useState('Description');
   const {userRole}=useContext(UserContext);
-  // var [userData,setUserData]=useState([]);
-  const route=useRoute();
-  const {userData}=route.params;
-  console.log(userData);
-  useEffect(()=>{
-    setCname(userData[0].cname);
-    setRole(userData[0].JobRole);
-    setLoc(userData[0].Location);
-    setSal(userData[0].Salary);
-    setType(userData[0].JobType);
-    setPos(userData[0].Position);
-    setDes(userData[0].JobDes);
-  })
-  // try{
-  //   useEffect(()=>{
-  //     const unsubscribe=firestore()
-  //     .collection('recruit')
-  //     .onSnapshot((querySnapshot)=>{
-  //       const data=[];
-  //       querySnapshot.forEach((documentSnapshot)=>{
-  //         if(documentSnapshot.exists){
-  //             data.push({
-  //               id:documentSnapshot.id,
-  //               ...documentSnapshot.data(),
-                
-  //             });
-  //           }
-  //       });
-  //       setUserData(data);
+  const [userData,setUserData]=useState([]);
+  try{
+    const user=firebase.auth().currentUser;
+    if(user)
+    useEffect(()=>{
+      firestore()
+      .collection('recruit')
+      .doc(user.uid)
+      .get()
+      .then(documentSnapshot=>{
+        const data=[];
+        if(documentSnapshot.exists)
+        data.push({
+          id:documentSnapshot.id,
+          ...documentSnapshot.data(),
+        })
+        setUserData(data);
+        if(userData.length===1){
+        setCname(userData[0].cname);
+        setDes(userData[0].JobDes);
+        setLoc(userData[0].Location);
+        setPos(userData[0].Position);
+        setRole(userData[0].JobRole);
+        setSal(userData[0].Salary);
+        setType(userData[0].JobType);
+        }
+      })
+    })
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
 
-  //     });
-  //     return()=>unsubscribe();
-  //   },[]);
-  // }
-  // catch(error)
-  // {
-  //   console.log(error);
-  // }
-  // console.log(userData.length);
-  // // console.log(userData[0].cname);
-  // console.log("hi");
-  // // console.log(userData[0]);
   
   const handleBack=()=>{
     if(userRole==='Recruiter')
@@ -114,4 +105,4 @@ const styles=StyleSheet.create({
   },
   
 })
-export default Desc1;
+export default Desc2;

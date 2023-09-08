@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useEffect } from 'react';
 import { Button, TextInput, Text, Avatar,FAB,IconButton} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { textAlign } from '@mui/system';
@@ -16,6 +16,9 @@ const Myaccount = (props) => {
   const {userRole}=useContext(UserContext);
   const [selectedFile,setSelectedFile]=useState({});
   const [fileUrl,setfileUrl]=useState('');
+  const user=firebase.auth().currentUser;
+  const [themes,setThemes]=useState("");
+  const db=firestore();
   const handleProfilePic=async()=>{
     try{
       const user=firebase.auth().currentUser;
@@ -51,8 +54,41 @@ const Myaccount = (props) => {
       console.log('error while sign out',error);
     }
   };
+  if(user)
+  {
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
+     if(documentSnapshot.data().uiTheme==="light")
+           setThemes("light");
+      if(documentSnapshot.data().uiTheme==="dark")
+          setThemes("dark");
+      });
+      return()=>unsubscribe();
+    },[])
+}
+  const handleTheme=()=>{
+    //console.log('Pressed');
+    //const user1=firebase.auth().currentUser
+    if(user){
+      if(themes==='light'){
+     const userdocRef=db.collection('users').doc(user.uid);
+      setThemes("dark");
+      userdocRef.update({'uiTheme':"dark"});
+    }
+    else if(themes==='dark')
+    {
+      const userdocRef=db.collection('users').doc(user.uid);
+      setThemes("light");
+      console.log('pressed');
+      userdocRef.update({'uiTheme':"light"});
+    }
+    }
+  }
   return (
-      <View style={styles.container}>
+      <View style={{flex:1,paddingHorizontal:20,backgroundColor:themes==="light"?"white":'#121212' ,}}>
         <IconButton
         icon="menu"
         style={{top:60,left:-10,zIndex:1}}
@@ -60,15 +96,22 @@ const Myaccount = (props) => {
         iconColor='#6750a4'
         onPress={()=>props.navigation.openDrawer()}
         />
+         <IconButton
+      icon={themes==="light"?"weather-sunny":"moon-waning-crescent"}
+      size={30}
+      iconColor='#6750a4'
+      style={{position:'relative',top:8,left:350,zIndex:1}}
+      onPress={handleTheme}
+      />
         {/* <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.openDrawer()}></Button>  */}
-      <Text style={styles.welcome} variant="displaySmall">Profile</Text>
+      <Text style={{textAlign:'center',color:themes==="light"?"black":"white"}} variant="displaySmall">Profile</Text>
       <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
 
       <Avatar.Image style={{marginLeft:100,marginTop:40,}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
      
-     <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40}} variant='titleLarge'>Name: <Text>{userName}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Email ID: <Text>{userEmail}</Text></Text>
-     <Text style={{paddingBottom:20,paddingLeft:20}} variant='titleLarge'>Role: <Text>{userRole}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40,color:themes==="light"?"black":"white"}} variant='titleLarge'>Name: <Text style={{color:themes==="light"?"black":"white"}}>{userName}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?"black":"white"}} variant='titleLarge'>Email ID: <Text style={{color:themes==="light"?"black":"white"}} >{userEmail}</Text></Text>
+     <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?"black":"white"}} variant='titleLarge'>Role: <Text style={{color:themes==="light"?"black":"white"}} >{userRole}</Text></Text>
         <Button style={{marginTop:10}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
           Sign Out
         </Button>
@@ -76,27 +119,5 @@ const Myaccount = (props) => {
     </View>
   );
 };
-const styles=StyleSheet.create({
-  container:{
-    flex:1,
-    //justifyContent:'center',
-    // paddingTop:40,
-    paddingHorizontal:20,
-    backgroundColor:'white' ,
-  },
-  textBox1:{
-    paddingBottom: 10,
-    marginBottom: 20,
-  },
 
-  welcome:{
-    textAlign:'center',
-    // paddingLeft:200,
-    paddingTop:10,
-  },
-  login:{
-    paddingBottom:20,
-    
-  },
-})
 export default Myaccount;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Button, TextInput, Text,Provider, DefaultTheme,Dialog,IconButton} from 'react-native-paper';
 import { View, StyleSheet,KeyboardAvoidingView,ScrollView } from 'react-native';
 import { textAlign } from '@mui/system';
@@ -13,6 +13,7 @@ import firestore from '@react-native-firebase/firestore';
 
 const PostForm = (props) => {
   const db=firestore();
+  const [themes,setThemes]=useState('');
   // const [showDropDown,setShowDropDown]=useState(false);
   // const [type,setType]= useState ("");
   // const typeList=[
@@ -31,7 +32,31 @@ const PostForm = (props) => {
   // ]
   const [visible,setVisible]=useState(false);
   const hideDialog=()=>setVisible(false);
+    
+  try{
+    const user=firebase.auth().currentUser;
+  if(user)
+  {
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
+     if(documentSnapshot.data().uiTheme==="light")
+           setThemes("light");
+      if(documentSnapshot.data().uiTheme==="dark")
+          setThemes("dark");
+      });
+      return()=>unsubscribe();
+    },[])
+}
+}
+catch(error)
+{
+console.log(error);
+}
   const handleSubmit=async(values)=>{
+
     console.log(values);
     try{
     const user=firebase.auth().currentUser;
@@ -47,12 +72,8 @@ const PostForm = (props) => {
         Salary:values.sal,
         JobDes:values.desc, 
       };
-      const uidStore=[];
-      var uid=uuid.v4();
-      const userDocRef=db.collection('recuit').doc(user.uid).collection(uid.toString()).doc(uid.toString());
+      const userDocRef=db.collection('recruit').doc(user.uid);
       await userDocRef.set(empData);
-      uidStore.push(uid.toString());
-      console.log(uidStore);
       setVisible(true);
     }
     }
@@ -63,15 +84,17 @@ const PostForm = (props) => {
   }
   return (
 
-      <ScrollView style={styles.container}>
+      <ScrollView style={{flex:1,paddingHorizontal:20,backgroundColor:themes==='light'?'white':"#121212" ,}}>
         <IconButton
         icon='keyboard-backspace'
         size={30}
+        iconColor='#6750a4'
         style={{position:'absolute',top:40,left:-10,zIndex:1}}
         onPress={()=>props.navigation.navigate("Home2")}
         />
-      <Text style={styles.welcome} variant="displaySmall">Job Posting Form</Text>
-      <Provider theme={DefaultTheme}>
+      <Text style={{paddingTop:50,paddingBottom:60,fontWeight:'bold',textAlign:'center',color:themes==='light'?'black':'white'}} variant="displaySmall">Job Posting Form</Text>
+      
+      {/* <Provider theme={DefaultTheme}> */}
       <Formik
       initialValues={{cname:'',loc:'',role:'',pos:'',sal:'',desc:'',type:''}}
       onSubmit={handleSubmit}
@@ -175,6 +198,7 @@ const PostForm = (props) => {
             mode='outlined'
             label='Salary'
             name="sal"
+            
             placeholder="Enter salary"
             keyboardType='numeric'
             onChangeText={handleChange('sal')}
@@ -196,11 +220,6 @@ const PostForm = (props) => {
             multiline={true}
         />
         {errors.desc && touched.desc && <Text style={styles.errorMessage}>{errors.desc}</Text>}
-        
-        <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0}>
-            Post
-        </Button>
-
         <Dialog visible={visible} onDismiss={hideDialog}>
         <Dialog.Icon
         icon='check-circle'
@@ -212,22 +231,21 @@ const PostForm = (props) => {
           <Button onPress={()=>props.navigation.navigate("Home2")}>Okay</Button>
         </Dialog.Actions>
       </Dialog>
+        <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0 || visible?true:false}>
+            Post
+        </Button>
             </KeyboardAvoidingView>
-
         )}
         
       </Formik>
-      </Provider>
+      {/* </Provider> */}
 
       </ScrollView>
   );
 };
 const styles=StyleSheet.create({
   container:{
-    flex:1,
-    // paddingTop:50,
-    paddingHorizontal:20,
-    backgroundColor:'white' ,
+
   },
   textBox1:{
     paddingBottom: 10,
@@ -236,10 +254,7 @@ const styles=StyleSheet.create({
   },
 
   welcome:{
-    paddingTop:50,
-    paddingBottom:60,
-    fontWeight:'bold',
-    textAlign:'center'
+
   },
 
   errorMessage:{

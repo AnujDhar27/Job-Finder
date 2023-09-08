@@ -18,6 +18,7 @@ import Myaccount from './Myaccount';
 import UserContext from './UserContext';
 import LocationSearch from './LocationSearch';
 import EmpProfile from './EmpProfile';
+import Desc2 from './Desc2';
 import {View} from 'react-native';
 import {Drawer as PaperDrawer} from 'react-native-paper';
 const Stack = createStackNavigator();
@@ -27,8 +28,11 @@ const Draw = () => {
 
    return (
             <Drawer.Navigator
+          
             screenOptions={{swipeEdgeWidth:0,}}//this disables the opening of drawer on swiping
-            drawerContent={(props) => <CustomDrawerContent {...props}  />} >
+            drawerContent={(props) => <CustomDrawerContent {...props}  />}
+            
+            >
             <Drawer.Screen name='Home' component={Home2Screen} options={{headerShown:false}}/>
             <Drawer.Screen name='Applications' component={Applications} options={{headerShown:false}}/>
             <Drawer.Screen name='Saved Applicants' component={SavedApplicants} options={{headerShown:false}}/>  
@@ -78,6 +82,7 @@ const CustomDrawerContent=(props)=>{
     }
   return (
     <PaperDrawer.Section >
+
       <View style={{paddingTop:50,}}>
       <PaperDrawer.Item 
       active={active==='first'}
@@ -132,6 +137,7 @@ const CustomDrawerContent=(props)=>{
           <Stack.Screen name="Home" component={Home} options={{headerShown:false}} />
           <Stack.Screen name="EmpProfile" component={EmpProfile} options={{headerShown:false}}/>
           <Stack.Screen name="Desc1" component={Desc1} options={{headerShown:false}} />
+          <Stack.Screen name="Desc2" component={Desc2} options={{headerShown:false}} />
           <Stack.Screen name="Form1" component={Form1} options={{headerShown:false}} />
           <Stack.Screen name="PostForm" component={PostForm} options={{headerShown:false}} /> 
           <Stack.Screen name="LocationSearch" component={LocationSearch} options={{headerShown:false}}/>
