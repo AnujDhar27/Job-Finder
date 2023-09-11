@@ -48,8 +48,12 @@ const EmpProfile = (props) => {
       .onSnapshot((documentSnapshot)=>{
             if(documentSnapshot.data().payID!=null)
             {
-              setType('Premium');              
+              setType('Premium');
+              console.log('hi');    
+              console.log(documentSnapshot.data().premiumDate);         
               const validDate=moment(documentSnapshot.data().premiumDate).add(30,'days').format('DD/MM/YYYY');
+              //const validDate=documentSnapshot.data().premiumDate.setDate(documentSnapshot.data().premiumDate + 30);
+              console.log(validDate);
               setValidity(validDate);
               const currDate=new Date();
               const newCurrDate=moment(currDate).format('DD/MM/YYYY');
@@ -119,7 +123,7 @@ const EmpProfile = (props) => {
 
 const handlePayment=()=>{
     const user=firebase.auth().currentUser;
-var options={
+    var options={
     description:'Credits towards the consultation',
     image:'https://i.imgur.com/3g7nmJC.png',
     currency:'INR',
@@ -131,17 +135,18 @@ var options={
         contact:'9191919876',
         name:'Anuj Razorpay test',
     },
-    theme:{color:'#800080'}
+    theme:{color:'#6750a4'}
 }
 RazorpayCheckout.open(options).then(async(data)=>{
     alert(`Success: ${data.razorpay_payment_id}`);
     if(user)
     {
         const date=new Date();
-        //const newDate=moment(date).format("DD/MM/YYYY");
+        const newDate=moment(date).format("YYYY-MM-DD");
+        console.log(newDate);
         const userDocRef=db.collection('users').doc(user.uid);
         await userDocRef.update({"payID":`${data.razorpay_payment_id}`});
-        await userDocRef.update({"premiumDate":date});
+        await userDocRef.update({"premiumDate":newDate});
             }
 
 }).catch((error) => {

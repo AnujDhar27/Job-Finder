@@ -1,6 +1,6 @@
 import React, { useContext, useState,useEffect } from 'react';
 import {Card, Button, IconButton, Text,} from 'react-native-paper';
-import { View, StyleSheet,KeyboardAvoidingView, Platform ,Image,FlatList} from 'react-native';
+import { View, StyleSheet,KeyboardAvoidingView, Platform ,Image,FlatList, TouchableOpacity} from 'react-native';
 import { textAlign } from '@mui/system';
 import {useRoute} from '@react-navigation/native'
 import { Searchbar } from 'react-native-paper';
@@ -15,9 +15,12 @@ const Home = (props) => {
   const db=firestore();
   const {userName}=useContext(UserContext);
   const [searchQuery,setSearchQuery]=useState('');
-  const user=firebase.auth().currentUser;
   const [userData,setuserData]=useState([]);
   const [themes,setThemes]=useState("");
+  const [partTime,setPartTime]=useState(0);
+  const [remoteJobs,setRemoteJobs]=useState(0);
+  const [fullTime,setFullTime]=useState(0);
+  
   try{
     const user=firebase.auth().currentUser;
     if(user)
@@ -62,7 +65,8 @@ const Home = (props) => {
   //     });
   //   });
   // })
-
+try{
+  const user=firebase.auth().currentUser;
     if(user)
     {
       useEffect(()=>{
@@ -78,8 +82,63 @@ const Home = (props) => {
         return()=>unsubscribe();
       },[])
   }
+}
+catch(error)
+{
+  console.log(error);
+}
+  //fetching number of part time jobs
+  try{
+    useEffect(()=>{
+      firestore()
+      .collection('recruit')
+      .where('JobType','==','Part time')
+      .get()
+      .then(querySnapshot=>{
+        setPartTime(querySnapshot.size)
+        console.log(querySnapshot.size);
+      })
+    },[])
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
+//fetching number of remote jobs
+try{
+  useEffect(()=>{
+    firestore()
+    .collection('recruit')
+    .where('JobType','==','Remote job')
+    .get()
+    .then(querySnapshot=>{
+      setRemoteJobs(querySnapshot.size)
+      console.log(querySnapshot.size)
+    })
+  },[])
+}
+catch(error)
+{
 
-  const onChangeSearch=(query)=>{setSearchQuery(query)};
+}
+//fetching number of full time jobs
+try{
+  useEffect(()=>{
+    firestore()
+    .collection('recruit')
+    .where('JobType','==','Full time')
+    .get()
+    .then(querySnapshot=>{
+      setFullTime(querySnapshot.size)
+      console.log(querySnapshot.size)
+    })
+  },[])
+} 
+catch(error)
+{
+  console.log(error);
+}
+const onChangeSearch=(query)=>{setSearchQuery(query)};
   return (
 
       <KeyboardAvoidingView style={{flex:1,paddingHorizontal:20,backgroundColor:themes==='light'?'white':"#121212"}}>
@@ -105,38 +164,46 @@ const Home = (props) => {
       
 
       <Card style={styles.card1}>
+        <TouchableOpacity onPress={()=>props.navigation.navigate('RemoteJobs')}>
         <Card.Content>
           <Image 
           source={require('../src/remote-jobs.png')}
-          style={{marginLeft:49,width:50,height:50,top:30}}
+          style={{marginLeft:49,width:50,height:50,top:35}}
           />
-        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',top:40}}>44.8K</Text>
-          <Text variant='titleSmall' style={{textAlign:'center',top:40}}>Remote Jobs</Text>
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',top:50}}>{remoteJobs}</Text>
+          <Text variant='titleSmall' style={{textAlign:'center',top:55}}>Remote Jobs</Text>
         </Card.Content>
-        </Card>
+        </TouchableOpacity>
+        </Card> 
 
         <Card style={styles.card2}>
+          <TouchableOpacity onPress={()=>props.navigation.navigate('FullTime')}>
         <Card.Content>
           <Image 
           source={require('../src/full-time.png')}
-          style={{width:30,height:30,top:25,left:18}}
+          style={{width:30,height:30,top:35,left:18}}
           />
-        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',bottom:10}}>66.8K</Text>
-          <Text variant='titleSmall' style={{textAlign:'center',bottom:10}}>Full Time</Text>
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',bottom:-5}}>{fullTime}</Text>
+          <Text variant='titleSmall' style={{textAlign:'center',bottom:-5}}>Full Time</Text>
         </Card.Content>
+        </TouchableOpacity>
         </Card>
 
         <Card style={styles.card3}>
+          <TouchableOpacity onPress={()=>props.navigation.navigate('PartTime')}>
         <Card.Content>
         <Image 
           source={require('../src/part-tiime.png')}
-          style={{width:30,height:30,top:25,left:18}}
+          style={{width:30,height:30,top:35,left:18}}
           />
-        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',bottom:10}}>38.9K</Text>
-          <Text variant='titleSmall' style={{textAlign:'center',bottom:10}}>Part Time</Text>
+        <Text variant='titleLarge' style={{fontWeight:'bold',textAlign:'center',bottom:-5}}>{partTime}</Text>
+          <Text variant='titleSmall' style={{textAlign:'center',bottom:-10}}>Part Time</Text>
         </Card.Content>
+        </TouchableOpacity>
         </Card>
+
       <Text variant='headlineMedium' style={{fontWeight:'bold',marginBottom:20,color:themes==='light'?'black':'white'}} >Recent Job List</Text>
+      
       <FlatList
         data={userData}
         keyExtractor={(item) => item.id}
@@ -195,21 +262,22 @@ const styles=StyleSheet.create({
     top:330,
     left:20,
     bottom:30,
-    width:170,
+    width:180,
     height:240,
   },
   card2:{
     position:'absolute',
-    left:200,
-    bottom:480,
+    left:220,
+    bottom:470,
     width:'50%',
-    height:105,
+    height:110,
 
   },
   card3:{
     position:'absolute',
-    left:200,
-    bottom:350,
+    left:220,
+    bottom:345,
+    height:110,
     width:'50%',
   },
   card4:{

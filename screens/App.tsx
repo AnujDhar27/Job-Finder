@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
@@ -21,19 +21,24 @@ import EmpProfile from './EmpProfile';
 import Desc2 from './Desc2';
 import {View} from 'react-native';
 import {Drawer as PaperDrawer} from 'react-native-paper';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
+import RemoteJobs from './RemoteJobs';
+import PartTime from './PartTime';
+import FullTime from './FullTime';
+
 const Stack = createStackNavigator();
 const Drawer=createDrawerNavigator();
 //const [active,setActive]=useState('first');
-const Draw = () => {
 
+const Draw = () => {
+  
    return (
             <Drawer.Navigator
-          
-            screenOptions={{swipeEdgeWidth:0,}}//this disables the opening of drawer on swiping
+            screenOptions={{drawerStyle:{backgroundColor:'white'},swipeEdgeWidth:0,}}//this disables the opening of drawer on swiping swipeEdgeWidth:0
             drawerContent={(props) => <CustomDrawerContent {...props}  />}
-            
             >
-            <Drawer.Screen name='Home' component={Home2Screen} options={{headerShown:false}}/>
+            <Drawer.Screen name='Home'  component={Home2Screen} options={{headerShown:false}}/>
             <Drawer.Screen name='Applications' component={Applications} options={{headerShown:false}}/>
             <Drawer.Screen name='Saved Applicants' component={SavedApplicants} options={{headerShown:false}}/>  
             <Drawer.Screen name='My Contacts'component={Mycontacts} options={{headerShown:false}}/>
@@ -88,6 +93,7 @@ const CustomDrawerContent=(props)=>{
       active={active==='first'}
       icon='home'
       label="Home"
+      
       onPress={handleNavHome}
   
       />
@@ -96,6 +102,7 @@ const CustomDrawerContent=(props)=>{
       label="Applications"
       active={active==='second'}
       onPress={handleNavApp}
+    
       //onPress={()=>props.navigation.navigate("Applications")}
       />
       <PaperDrawer.Item
@@ -127,6 +134,7 @@ const CustomDrawerContent=(props)=>{
     const [userName,setUserName]=useState(null);
     const [userEmail,setUserEmail]=useState(null);
     const [userRole,setUserRole]=useState(null);
+    
         return (
       <NavigationContainer>
         <UserContext.Provider value={{userName,setUserName,userEmail,setUserEmail,userRole,setUserRole}}>
@@ -135,6 +143,9 @@ const CustomDrawerContent=(props)=>{
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{headerShown:false}} />
           <Stack.Screen name="SignUp" component={SignUp} options={{headerShown:false}} />
           <Stack.Screen name="Home" component={Home} options={{headerShown:false}} />
+          <Stack.Screen name="RemoteJobs" component={RemoteJobs} options={{headerShown:false}} />
+          <Stack.Screen name="PartTime" component={PartTime} options={{headerShown:false}} />
+          <Stack.Screen name="FullTime" component={FullTime} options={{headerShown:false}} />
           <Stack.Screen name="EmpProfile" component={EmpProfile} options={{headerShown:false}}/>
           <Stack.Screen name="Desc1" component={Desc1} options={{headerShown:false}} />
           <Stack.Screen name="Desc2" component={Desc2} options={{headerShown:false}} />
@@ -142,7 +153,6 @@ const CustomDrawerContent=(props)=>{
           <Stack.Screen name="PostForm" component={PostForm} options={{headerShown:false}} /> 
           <Stack.Screen name="LocationSearch" component={LocationSearch} options={{headerShown:false}}/>
           <Stack.Screen name="Home2" component={Draw} options={{headerShown:false}} />
- 
         </Stack.Navigator>
         </UserContext.Provider>
       </NavigationContainer>
