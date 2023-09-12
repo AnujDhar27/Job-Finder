@@ -19,6 +19,34 @@ const Myaccount = (props) => {
   const user=firebase.auth().currentUser;
   const [themes,setThemes]=useState("");
   const db=firestore();
+  if(user)
+  {
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
+     if(documentSnapshot.data().uiTheme==="light")
+           setThemes("light");
+      if(documentSnapshot.data().uiTheme==="dark")
+          setThemes("dark");
+      });
+      return()=>unsubscribe();
+    },[])
+}
+  if(user)
+  {
+      useEffect(()=>{
+        const unsubscribe=firestore()
+        .collection('users')
+        .doc(user.uid)
+        .onSnapshot((documentSnapshot)=>{
+       if(documentSnapshot.data().profileUrl)
+       setfileUrl(documentSnapshot.data().profileUrl);
+       });
+        return()=>unsubscribe();
+      },[])
+}
   const handleProfilePic=async()=>{
     try{
       const user=firebase.auth().currentUser;
@@ -35,6 +63,8 @@ const Myaccount = (props) => {
         const url=await fileRef.getDownloadURL();
         console.log(url);
         setfileUrl(url);
+        const userdocRef=db.collection('users').doc(user.uid);
+        userdocRef.update({'profileUrl':url})
       }
   }
   }
@@ -54,21 +84,7 @@ const Myaccount = (props) => {
       console.log('error while sign out',error);
     }
   };
-  if(user)
-  {
-    useEffect(()=>{
-      const unsubscribe=firestore()
-      .collection('users')
-      .doc(user.uid)
-      .onSnapshot((documentSnapshot)=>{
-     if(documentSnapshot.data().uiTheme==="light")
-           setThemes("light");
-      if(documentSnapshot.data().uiTheme==="dark")
-          setThemes("dark");
-      });
-      return()=>unsubscribe();
-    },[])
-}
+
   const handleTheme=()=>{
     //console.log('Pressed');
     //const user1=firebase.auth().currentUser

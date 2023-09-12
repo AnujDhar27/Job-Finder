@@ -57,7 +57,7 @@ import firebase from '@react-native-firebase/app'
           })
           setUserData(data);
         })
-      },[])
+      })
     }
     catch(error)
     {

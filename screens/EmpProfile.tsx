@@ -1,6 +1,6 @@
 
 import React, { useEffect,useContext, useState } from 'react';
-import { Button, TextInput, Text, Avatar,FAB,IconButton} from 'react-native-paper';
+import { Button, TextInput, Text, Avatar,FAB,IconButton,Dialog} from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { textAlign } from '@mui/system';
 import auth from '@react-native-firebase/auth'
@@ -24,6 +24,9 @@ const EmpProfile = (props) => {
   const [validity,setValidity]=useState('-');
   const user=firebase.auth().currentUser;
   const [themes,setThemes]=useState("");
+  const [visible,setVisible]=useState(false);
+  const hideDialog=()=>setVisible(false);
+  //light mode dark mode check
   if(user)
   {
     useEffect(()=>{
@@ -39,6 +42,21 @@ const EmpProfile = (props) => {
       return()=>unsubscribe();
     },[])
 }
+//checking for proile photo
+if(user)
+{
+    useEffect(()=>{
+      const unsubscribe=firestore()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot((documentSnapshot)=>{
+     if(documentSnapshot.data().profileUrl)
+     setfileUrl(documentSnapshot.data().profileUrl);
+     });
+      return()=>unsubscribe();
+    },[])
+}
+//next due date and validity check
   if(user)
   {
     useEffect(()=>{
@@ -78,6 +96,7 @@ const EmpProfile = (props) => {
       },[]);
       
     }
+    //theme change
     const handleTheme=()=>{
       //console.log('Pressed');
       const user1=firebase.auth().currentUser
@@ -111,11 +130,13 @@ const EmpProfile = (props) => {
         const url=await fileRef.getDownloadURL();
         console.log(url);
         setfileUrl(url);
+        const userdocRef=db.collection('users').doc(user.uid);
+        userdocRef.update({'profileUrl':url})
       }
   }
   }
   catch(error){
-    
+    setVisible(true);
     console.log('Error',error);
   }
   
@@ -187,9 +208,9 @@ RazorpayCheckout.open(options).then(async(data)=>{
       />
         {/* <Button  icon="home" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.navigate('Home')}></Button>  */}
       <Text style={{textAlign:'center',color:themes==="light"?'black':'white',paddingTop:10,}} variant="displaySmall">Profile</Text>
-      <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
+      <FAB  style={{position:'absolute',left:280,top:280,zIndex:0}} icon='plus' onPress={handleProfilePic}/>
 
-      <Avatar.Image style={{marginLeft:100,marginTop:40,}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
+      <Avatar.Image style={{marginLeft:100,marginTop:40,zIndex:-1}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
      
      <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40,color:themes==="light"?'black':'white'}} variant='titleLarge'>Name: <Text style={{color:themes==="light"?'black':'white'}}>{userName}</Text></Text>
      <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?'black':'white'}} variant='titleLarge'>Email ID: <Text style={{color:themes==="light"?'black':'white'}}>{userEmail}</Text></Text>
@@ -200,7 +221,17 @@ RazorpayCheckout.open(options).then(async(data)=>{
         <Button style={{marginTop:20}} rippleColor="#FF000020" mode="contained" onPress={handleSignOut} >
           Sign Out
         </Button>
-      
+        <Dialog visible={visible} onDismiss={hideDialog}>
+         <Dialog.Icon icon='alert' size={40}/>
+          <Dialog.Title style={{justifyContent:'center',textAlign:'center'}}><Text variant='headlineMedium'>Profile Photo Upload Status</Text></Dialog.Title>
+          <Dialog.Content>
+            <Text variant='titleSmall' style={{textAlign:'center'}}>Failed to upload profile photo</Text>
+            <Text variant='titleSmall' style={{textAlign:'center'}}>Please try again!</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>OK</Button>
+          </Dialog.Actions>
+        </Dialog>
     </View>
   );
 };

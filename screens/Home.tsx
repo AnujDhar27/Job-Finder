@@ -20,13 +20,14 @@ const Home = (props) => {
   const [partTime,setPartTime]=useState(0);
   const [remoteJobs,setRemoteJobs]=useState(0);
   const [fullTime,setFullTime]=useState(0);
-  
+  //fetching recent jobs
   try{
     const user=firebase.auth().currentUser;
     if(user)
     useEffect(()=>{
       const unsubscribe=firestore()
       .collection('recruit')
+      .limit(2)//only 2 jobs are displayed in recent job list
       .onSnapshot((querySnapshot)=>{
         const data=[];
         querySnapshot.forEach((documentSnapshot)=>{
@@ -65,6 +66,8 @@ const Home = (props) => {
   //     });
   //   });
   // })
+  
+  //ui theme
 try{
   const user=firebase.auth().currentUser;
     if(user)
@@ -148,11 +151,11 @@ const onChangeSearch=(query)=>{setSearchQuery(query)};
               value={searchQuery}
               style={styles.searchbar}/>
               <IconButton
-              icon="account"
-              size={30}
+              icon="account-circle"
+              size={45}
               iconColor='#6750a4'
               onPress={()=>props.navigation.navigate('EmpProfile')}
-              style={{position:'relative',left:320,bottom:50,width:50,height:45,}}
+              style={{position:'relative',left:320,bottom:58,width:50,height:45,}}
               />
               {/* <Button   mode='contained-tonal' icon="account" onPress={()=>props.navigation.navigate('EmpProfile')} style={{position:'relative',left:320,bottom:50,width:50,height:45,}} ></Button> */}
       
@@ -214,7 +217,7 @@ const onChangeSearch=(query)=>{setSearchQuery(query)};
             <Text variant='titleLarge'> {item.cname}</Text>
             <Text variant='titleMedium'> {item.JobRole}</Text>
             <Text variant='titleSmall'> Rs. {item.Salary} </Text>
-            <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1",{userData},)}>Check Details</Button>
+            <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1",{jobName:item.cname,jobRole:item.JobRole,jobDes:item.JobDes,jobType:item.JobType,jobLoc:item.Location,jobPos:item.Position,jobSal:item.Salary})}>Check Details</Button>
             </View>
             </Card>
         )}

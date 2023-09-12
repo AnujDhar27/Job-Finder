@@ -25,7 +25,7 @@ const Applications= (props) => {
           
             //console.log(documentSnapshot.data().payID);
             //console.log(documentSnapshot.data())
-            if(documentSnapshot.data().payID!=null)
+            if(documentSnapshot.data().payID!=null&&documentSnapshot.data().name!=null)
             {
               data1.push({
                 id:documentSnapshot.id,

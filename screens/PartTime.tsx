@@ -81,7 +81,7 @@ return(
             <Text variant='titleLarge'> {item.cname}</Text>
             <Text variant='titleMedium'> {item.JobRole}</Text>
             <Text variant='titleSmall'> Rs. {item.Salary} </Text>
-            <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1",{userData},)}>Check Details</Button>
+            <Button rippleColor="#FF000020" style={styles.apply} mode='contained' onPress={()=>props.navigation.navigate("Desc1",{jobName:item.cname,jobRole:item.JobRole,jobDes:item.JobDes,jobType:item.JobType,jobLoc:item.Location,jobPos:item.Position,jobSal:item.Salary},)}>Check Details</Button>
             </View>
             </Card>
         )}

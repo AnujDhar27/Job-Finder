@@ -22,17 +22,16 @@ const Desc1 = (props) => {
   const {userRole}=useContext(UserContext);
   // var [userData,setUserData]=useState([]);
   const route=useRoute();
-  const {userData}=route.params;
-  console.log(userData);
-  useEffect(()=>{
-    setCname(userData[0].cname);
-    setRole(userData[0].JobRole);
-    setLoc(userData[0].Location);
-    setSal(userData[0].Salary);
-    setType(userData[0].JobType);
-    setPos(userData[0].Position);
-    setDes(userData[0].JobDes);
-  })
+  const {jobName,jobRole,jobDes,jobType,jobLoc,jobPos,jobSal}=route.params;
+   useEffect(()=>{
+     setCname(jobName);
+     setRole(jobRole);
+     setLoc(jobLoc);
+     setSal(jobSal);
+     setType(jobType);
+     setPos(jobPos);
+     setDes(jobDes);
+   })
   // try{
   //   useEffect(()=>{
   //     const unsubscribe=firestore()
@@ -77,6 +76,7 @@ const Desc1 = (props) => {
         size={30}
         style={{position:'absolute',top:40,left:-10,zIndex:1}}
         onPress={handleBack}
+        iconColor='#6750a4'
         />
         <Text variant='headlineLarge' style={{textAlign:'center',padding:50,paddingLeft:50}} > {cname} </Text>
         <Image style={{width:230,position:'relative',bottom:160,left:80}} source={require('../src/logo1.png')} resizeMode='contain'/>

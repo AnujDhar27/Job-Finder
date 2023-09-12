@@ -1,6 +1,6 @@
 import React from 'react';
 import {useState,useRef} from 'react';
-import { Button, TextInput, Text} from 'react-native-paper';
+import { Button, TextInput, Text,IconButton} from 'react-native-paper';
 import { ScrollView, StyleSheet,KeyboardAvoidingView,SafeAreaView ,Platform} from 'react-native';
 import {Alert} from 'react-native';
 import {Formik} from 'formik';
@@ -98,7 +98,14 @@ const handlePreview=async()=>{
   };
   return (
       <ScrollView style={styles.container}>
-      <Text style={styles.welcome} variant="displaySmall">Job Application Form</Text>
+        <IconButton
+        icon='keyboard-backspace'
+        size={30}
+        style={{position:'absolute',top:30,left:-10,zIndex:1}}
+        onPress={()=>props.navigation.navigate('Home')}
+        iconColor='#6750a4'
+        />
+      <Text style={styles.welcome} variant="headlineLarge">Job Application Form</Text>
       <Formik
       initialValues={{name:'',currOrg:'',emailID:'',cinfo:'',currSal:'',expSal:'',yoe:'',message:''}}
       onSubmit={handleSubmit}
@@ -264,7 +271,6 @@ const styles=StyleSheet.create({
     paddingTop:40,
     textAlign:'center',
     paddingBottom:30,
-    fontWeight:'bold',
   },
   login:{
     paddingBottom:20,
