@@ -18,16 +18,17 @@ const Mycontacts = (props) => {
   if(user)
   {
     useEffect(()=>{
-      const unsubscribe=firestore()
+      firestore()
       .collection('users')
       .doc(user.uid)
-      .onSnapshot((documentSnapshot)=>{
-     if(documentSnapshot.data().uiTheme==="light")
-           setThemes("light");
-      if(documentSnapshot.data().uiTheme==="dark")
-          setThemes("dark");
-      });
-      return()=>unsubscribe();
+      .get()
+      .then(documentSnapshot=>{
+        if(documentSnapshot.exists)
+        if(documentSnapshot.data().uiTheme==='light')
+        setThemes('light');
+        if(documentSnapshot.data().uiTheme==='dark')
+        setThemes('dark');
+      })
     },[])
 }
 }
@@ -41,14 +42,12 @@ console.log(error);
     .onSnapshot((querySnapshot)=>{
       const data=[];
       querySnapshot.forEach((documentSnapshot)=>{
-          if(documentSnapshot.data().cinfo!=null)
-          if(documentSnapshot.data().cinfo.length===10&& /^\d+$/.test(documentSnapshot.data().cinfo))
-          {
+        if(documentSnapshot.exists)
+        if(documentSnapshot.data().name)
         data.push({
           id:documentSnapshot.id,
           ...documentSnapshot.data(),
         });
-      }
       });
       setUserDetails(data);
       setOldData(data);
@@ -96,7 +95,7 @@ console.log(error);
       renderItem={({item})=>(
        
         <Card style={{marginTop:20,paddingBottom:10,}}>
-         {/* <TouchableOpacity onPress={() => Linking.openURL(`mailto:${item.emailID}`)}> */}
+        
           <View style={{padding:20,}}>
             
             <Text variant='titleMedium'>Name: {item.name}</Text>
@@ -105,10 +104,8 @@ console.log(error);
 
             <IconButton icon="email" onPress={()=>Linking.openURL(`mailto:${item.emailID}`)} style={{position:'absolute',left:300,top:10,}}/>
             <IconButton icon='cellphone' onPress={()=>Linking.openURL(`tel:${item.cinfo}`)} style={{position:'absolute',left:300,top:50,}}/>
-            {/* <Button style={{marginLeft:100,marginRight:100,right:100,top:20,}} icon='cellphone' mode='elevated' onPress={()=>Linking.openURL(`tel:${item.cinfo}`)}></Button> 
-            <Button icon='email' style={{marginLeft:80,marginRight:80,left:80,bottom:20,}}  mode='elevated' onPress={()=>Linking.openURL(`mailto:${item.emailID}`)}></Button> */}
+           
           </View>
-          {/* </TouchableOpacity> */}
         </Card>
 
         

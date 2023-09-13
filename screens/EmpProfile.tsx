@@ -27,45 +27,65 @@ const EmpProfile = (props) => {
   const [visible,setVisible]=useState(false);
   const hideDialog=()=>setVisible(false);
   //light mode dark mode check
+  try{
+    const user=firebase.auth().currentUser;
   if(user)
   {
     useEffect(()=>{
-      const unsubscribe=firestore()
+      firestore()
       .collection('users')
       .doc(user.uid)
-      .onSnapshot((documentSnapshot)=>{
-     if(documentSnapshot.data().uiTheme==="light")
-           setThemes("light");
-      if(documentSnapshot.data().uiTheme==="dark")
-          setThemes("dark");
-      });
-      return()=>unsubscribe();
+      .get()
+      .then(documentSnapshot=>{
+        if(documentSnapshot.exists)
+        {
+          if(documentSnapshot.data().uiTheme==='light')
+          setThemes("light");
+          if(documentSnapshot.data().uiTheme==='dark')
+          setThemes("light");
+        }
+        
+      })
     },[])
 }
+}
+catch(error)
+{
+  console.log(error);
+}
 //checking for proile photo
+try{
 if(user)
 {
     useEffect(()=>{
-      const unsubscribe=firestore()
+      firestore()
       .collection('users')
       .doc(user.uid)
-      .onSnapshot((documentSnapshot)=>{
-     if(documentSnapshot.data().profileUrl)
-     setfileUrl(documentSnapshot.data().profileUrl);
-     });
-      return()=>unsubscribe();
+      .get()
+      .then(documentSnapshot=>{
+        if(documentSnapshot.data().profileUrl!=='')
+        setfileUrl(documentSnapshot.data().profileUrl);
+      })
     },[])
+}
+}
+catch(error)
+{
+  console.log(error);
 }
 //next due date and validity check
   if(user)
   {
     useEffect(()=>{
-      const unsubscribe=firestore()
+      firestore()
       .collection('users')
       .doc(user.uid)
-      .onSnapshot((documentSnapshot)=>{
-            if(documentSnapshot.data().payID!=null)
-            {
+      .get()
+      .then(documentSnapshot=>{
+        if(documentSnapshot.exists)
+        {
+          if(documentSnapshot.data().payID!=='')
+          {
               setType('Premium');
               console.log('hi');    
               console.log(documentSnapshot.data().premiumDate);         
@@ -87,19 +107,18 @@ if(user)
                else{
                  console.log('valid');
                }
-              }
-            // else (documentSnapshot.data().payID===null)
-            else
-              setType('Normal');
-        });
-        return()=>unsubscribe();
-      },[]);
+          }
+          else{
+            setType('Normal');
+          }
+        }
+      })
+      });
       
     }
     //theme change
-    const handleTheme=()=>{
+const handleTheme=()=>{
       //console.log('Pressed');
-      const user1=firebase.auth().currentUser
       if(user){
         if(themes==='light'){
        const userdocRef=db.collection('users').doc(user.uid);
@@ -110,10 +129,11 @@ if(user)
       {
         const userdocRef=db.collection('users').doc(user.uid);
         setThemes("light");
+        console.log('pressed');
         userdocRef.update({'uiTheme':"light"});
       }
-      }
-    }
+      }   
+  }
   const handleProfilePic=async()=>{
     try{
       const user=firebase.auth().currentUser;
@@ -208,10 +228,10 @@ RazorpayCheckout.open(options).then(async(data)=>{
       />
         {/* <Button  icon="home" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.navigate('Home')}></Button>  */}
       <Text style={{textAlign:'center',color:themes==="light"?'black':'white',paddingTop:10,}} variant="displaySmall">Profile</Text>
-      <FAB  style={{position:'absolute',left:280,top:280,zIndex:0}} icon='plus' onPress={handleProfilePic}/>
+      
+      <Avatar.Image style={{marginLeft:100,marginTop:40,}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
+      <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
 
-      <Avatar.Image style={{marginLeft:100,marginTop:40,zIndex:-1}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
-     
      <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40,color:themes==="light"?'black':'white'}} variant='titleLarge'>Name: <Text style={{color:themes==="light"?'black':'white'}}>{userName}</Text></Text>
      <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?'black':'white'}} variant='titleLarge'>Email ID: <Text style={{color:themes==="light"?'black':'white'}}>{userEmail}</Text></Text>
      <Text style={{paddingBottom:20,paddingLeft:20,color:themes==="light"?'black':'white'}} variant='titleLarge'>Role: <Text style={{color:themes==="light"?'black':'white'}}>{userRole}</Text></Text>

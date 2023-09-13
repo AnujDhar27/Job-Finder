@@ -22,7 +22,7 @@ const Desc1 = (props) => {
   const {userRole}=useContext(UserContext);
   // var [userData,setUserData]=useState([]);
   const route=useRoute();
-  const {jobName,jobRole,jobDes,jobType,jobLoc,jobPos,jobSal}=route.params;
+  const {jobName,jobRole,jobDes,jobType,jobLoc,jobPos,jobSal,jobId}=route.params;
    useEffect(()=>{
      setCname(jobName);
      setRole(jobRole);
@@ -101,7 +101,7 @@ const Desc1 = (props) => {
       <Text variant='headlineSmall' style={{bottom:1180, fontWeight:'bold'}}> Description</Text>
       <Text variant='bodyLarge' style={{bottom:1160,position:'relative',left:10}}>{des}</Text>
 
-      <Button rippleColor="#FF000020" mode='contained' style={{position:'relative',bottom:1100,}} onPress={()=>props.navigation.navigate('Form1')} disabled={userRole==='Recruiter'?true:false}><Text variant='bodyLarge' style={{color:'white',fontWeight:'bold'}}>Apply Now</Text></Button>
+      <Button rippleColor="#FF000020" mode='contained' style={{position:'relative',bottom:1100,}} onPress={()=>props.navigation.navigate('Form1',{jobId})} disabled={userRole==='Recruiter'?true:false}><Text variant='bodyLarge' style={{color:'white',fontWeight:'bold'}}>Apply Now</Text></Button>
     </ScrollView>
   );
 };

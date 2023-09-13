@@ -19,34 +19,52 @@ const Myaccount = (props) => {
   const user=firebase.auth().currentUser;
   const [themes,setThemes]=useState("");
   const db=firestore();
+  try{
   if(user)
+      {
+        useEffect(()=>{
+          firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get()
+          .then(documentSnapshot=>{
+            if(documentSnapshot.exists)
+            {
+              if(documentSnapshot.data().uiTheme==="light")
+              setThemes("light");
+              if(documentSnapshot.data().uiTheme==="dark")
+              setThemes("dark");
+            }
+          })
+          
+        },[])
+    }
+  }
+  catch(error)
   {
-    useEffect(()=>{
-      const unsubscribe=firestore()
-      .collection('users')
-      .doc(user.uid)
-      .onSnapshot((documentSnapshot)=>{
-     if(documentSnapshot.data().uiTheme==="light")
-           setThemes("light");
-      if(documentSnapshot.data().uiTheme==="dark")
-          setThemes("dark");
-      });
-      return()=>unsubscribe();
-    },[])
-}
+    console.log(error);
+  }
+
+try{
   if(user)
   {
       useEffect(()=>{
-        const unsubscribe=firestore()
+        firestore()
         .collection('users')
         .doc(user.uid)
-        .onSnapshot((documentSnapshot)=>{
-       if(documentSnapshot.data().profileUrl)
-       setfileUrl(documentSnapshot.data().profileUrl);
-       });
-        return()=>unsubscribe();
+        .get()
+        .then(documentSnapshot=>{
+          if(documentSnapshot.data().profileUrl!=='')
+          setfileUrl(documentSnapshot.data().profileUrl);
+        })
       },[])
-}
+  }
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
+
   const handleProfilePic=async()=>{
     try{
       const user=firebase.auth().currentUser;
@@ -121,8 +139,8 @@ const Myaccount = (props) => {
       />
         {/* <Button  icon="menu" style={{position:'relative',top:60,width:2,paddingRight:20,zIndex:1}} onPress={()=> props.navigation.openDrawer()}></Button>  */}
       <Text style={{textAlign:'center',color:themes==="light"?"black":"white"}} variant="displaySmall">Profile</Text>
+      
       <FAB  style={{position:'absolute',left:280,top:280,zIndex:1}} icon='plus' onPress={handleProfilePic}/>
-
       <Avatar.Image style={{marginLeft:100,marginTop:40,}} size={200} source={Object.keys(fileUrl).length===0?require('../src/profile_Image.jpeg'):{uri:fileUrl}}/>
      
      <Text style={{paddingBottom:20,paddingLeft:20,paddingTop:40,color:themes==="light"?"black":"white"}} variant='titleLarge'>Name: <Text style={{color:themes==="light"?"black":"white"}}>{userName}</Text></Text>

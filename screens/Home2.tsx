@@ -23,16 +23,20 @@ import firebase from '@react-native-firebase/app'
       if(user)
       {
         useEffect(()=>{
-          const unsubscribe=firestore()
+          firestore()
           .collection('users')
           .doc(user.uid)
-          .onSnapshot((documentSnapshot)=>{
-         if(documentSnapshot.data().uiTheme==="light")
-               setThemes("light");
-          if(documentSnapshot.data().uiTheme==="dark")
+          .get()
+          .then(documentSnapshot=>{
+            if(documentSnapshot.exists)
+            {
+              if(documentSnapshot.data().uiTheme==="light")
+              setThemes("light");
+              if(documentSnapshot.data().uiTheme==="dark")
               setThemes("dark");
-          });
-          return()=>unsubscribe();
+            }
+          })
+          
         },[])
     }
   }
@@ -57,7 +61,7 @@ import firebase from '@react-native-firebase/app'
           })
           setUserData(data);
         })
-      })
+      },[])
     }
     catch(error)
     {

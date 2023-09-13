@@ -13,37 +13,58 @@ const Applications= (props) => {
   const [visible,setVisible]=useState(false);
   const hideDialog=()=>setVisible(false);
   const db=firestore();
+  const [appl,setappl]=useState([]);
   const [themes,setThemes]=useState("");
     const [userData,setUserData]=useState([]);
+    try{
+      const user=firebase.auth().currentUser;
+      if(user){
+        useEffect(()=>{
+          firestore()
+          .collection('recruit')
+          .doc(user.uid)
+          .get()
+          .then(documentSnapshot=>{
+            setappl(documentSnapshot.data().appllicants);
+          })
+        },[])
+        }
+      }
+    catch(error){
+      console.log(error);
+    }
+
     useEffect(()=>{
-      const unsubscribe=firestore()
+      firestore()
       .collection('users')
-      .onSnapshot((querySnapshot)=>{
+      .get()
+      .then(querySnapshot=>{
         const data1=[];
         const data2=[];
         querySnapshot.forEach((documentSnapshot)=>{
-          
-            //console.log(documentSnapshot.data().payID);
-            //console.log(documentSnapshot.data())
-            if(documentSnapshot.data().payID!=null&&documentSnapshot.data().name!=null)
-            {
-              data1.push({
-                id:documentSnapshot.id,
-                ...documentSnapshot.data(),
-              });
-              //console.log('hi');
-            }
-            else if (documentSnapshot.data().payID==null && documentSnapshot.data().name!=null){
-          data2.push({
-            id:documentSnapshot.id,
-            ...documentSnapshot.data(),
-          });
+          if(documentSnapshot.exists)
+          if(appl.includes(documentSnapshot.data().uid)){
+          if(documentSnapshot.data().name){
+          if(documentSnapshot.data().payID!=='')
+          {
+            data1.push({
+              id:documentSnapshot.id,
+              ...documentSnapshot.data(),
+            });
+          }
+          else{
+            data2.push({
+              id:documentSnapshot.id,
+              ...documentSnapshot.data(),
+            })
+          }
         }
-        });
-        setUserData([...data1,...data2]);//merging of 2 arrays
-      });
-      return()=>unsubscribe();
-    },[])//empty array to fire useffect only once, prevents app from crashing as it prevents infinite loop
+      }
+      })
+      setUserData([...data1,...data2]);//merging of 2 arrays
+      })
+    },[])
+        //empty array to fire useffect only once, prevents app from crashing as it prevents infinite loop
     
     //console.log(userData);
     const handleFav=async(item)=>{
@@ -106,21 +127,22 @@ const Applications= (props) => {
     }
     try{
       const user=firebase.auth().currentUser;
-    if(user)
-    {
-      useEffect(()=>{
-        const unsubscribe=firestore()
-        .collection('users')
-        .doc(user.uid)
-        .onSnapshot((documentSnapshot)=>{
-       if(documentSnapshot.data().uiTheme==="light")
-             setThemes("light");
-        if(documentSnapshot.data().uiTheme==="dark")
-            setThemes("dark");
-        });
-        return()=>unsubscribe();
-      },[])
-  }
+      if(user)
+      {
+        useEffect(()=>{
+          firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get()
+          .then(documentSnapshot=>{
+            if(documentSnapshot.exists)
+            if(documentSnapshot.data().uiTheme==='light')
+            setThemes('light');
+            if(documentSnapshot.data().uiTheme==='dark')
+            setThemes('dark');
+          })
+        },[])
+    }
 }
 catch(error)
 {
@@ -145,7 +167,12 @@ catch(error)
         renderItem={({ item }) => (
           <Card style={{marginTop:20,}}>
           <View style={styles.userContainer}>
-            <Button icon='cards-heart-outline' style={{left:320,top:20,zIndex:1,position:'absolute'}} onPress={()=>handleFav(item)}>add</Button>
+            <IconButton
+            icon='cards-heart-outline'
+            style={{left:320,top:20,zIndex:1,position:'absolute'}}
+            onPress={()=>handleFav(item)}
+            />
+            
             <Text variant='titleMedium'>Name: {item.name}</Text>
             <Text variant='titleMedium'>Email: {item.emailID}</Text>
             <Text variant='titleMedium'>Phone Number: {item.cinfo}</Text>

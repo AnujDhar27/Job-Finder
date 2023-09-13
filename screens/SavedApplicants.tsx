@@ -12,41 +12,40 @@ import firebase from '@react-native-firebase/app'
 const SavedApplicants = (props) => {
   const db=firestore();
   const [userData,setUserData]=useState([]);
-  const [icons,setIcons]=useState(0);
   const [themes,setThemes]=useState("");
 
   useEffect(()=>{
-    const unsubscribe=firestore()
+    firestore()
     .collection('users')
-    .onSnapshot((querySnapshot)=>{
+    .get()
+    .then(querySnapshot=>{
       const data1=[];
       const data2=[];
-      querySnapshot.forEach((documentSnapshot)=>{
-        
-          //console.log(documentSnapshot.data().payID);
-          //console.log(documentSnapshot.data())
-          if(documentSnapshot.data().payID!=null&&documentSnapshot.data().isFav!=null)
+      querySnapshot.forEach((documentSnapshot=>{
+
+        if(documentSnapshot.data().isFav===1)
+        {
+          if(documentSnapshot.data().payID!=='')
           {
             data1.push({
               id:documentSnapshot.id,
               ...documentSnapshot.data(),
-            });
-            //console.log('hi');
+            })
           }
-          else if (documentSnapshot.data().payID==null && documentSnapshot.data().name!=null&&documentSnapshot.data().isFav!=null){
-        data2.push({
-          id:documentSnapshot.id,
-          ...documentSnapshot.data(),
-        });
-      }
-      });
+          else{
+            data2.push({
+              id:documentSnapshot.id,
+              ...documentSnapshot.data(),
+            });
+          }
+        }
+      }))
       setUserData([...data1,...data2]);//merging of 2 arrays
+    })
     });
-    return()=>unsubscribe();
-  },[])
   const handleUnfav=async(item)=>{
     const userDocRef=db.collection('users').doc(item.uid);
-    await userDocRef.update({"isFav":null});
+    await userDocRef.update({"isFav":0});
   }
   const handleDownload=async(val)=>{
     try {
@@ -98,23 +97,25 @@ const SavedApplicants = (props) => {
       console.warn(err);
     }
   }
+  //theme set
   try{
     const user=firebase.auth().currentUser;
-  if(user)
-  {
-    useEffect(()=>{
-      const unsubscribe=firestore()
-      .collection('users')
-      .doc(user.uid)
-      .onSnapshot((documentSnapshot)=>{
-     if(documentSnapshot.data().uiTheme==="light")
-           setThemes("light");
-      if(documentSnapshot.data().uiTheme==="dark")
-          setThemes("dark");
-      });
-      return()=>unsubscribe();
-    },[])
-}
+    if(user)
+    {
+      useEffect(()=>{
+        firestore()
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then(documentSnapshot=>{
+          if(documentSnapshot.exists)
+          if(documentSnapshot.data().uiTheme==='light')
+          setThemes('light');
+          if(documentSnapshot.data().uiTheme==='dark')
+          setThemes('dark');
+        })
+      },[])
+  }
 }
 catch(error)
 {

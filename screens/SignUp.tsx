@@ -27,7 +27,9 @@ const SignUp= (props) => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
         const userDocRef=db.collection('users').doc(user.uid);
-        userDocRef.set({"payID":null});
+        userDocRef.set({"payID":'',"uiTheme":'light',"profileUrl":'',"isFav":0});//add isFav
+        // userDocRef.set({"uiTheme":"light"});
+        // userDocRef.set({"profileUrl":''});
         setVisible1(true);
         // Alert.alert(
         //   'Sign Up Successful',

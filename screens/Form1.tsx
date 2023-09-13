@@ -9,14 +9,15 @@ import firebase from '@react-native-firebase/app'
 import DocumentPicker from 'react-native-document-picker';
 import storage from '@react-native-firebase/storage';
 import FileViewer from 'react-native-file-viewer';
-import {actions, RichEditor, RichToolbar} from "react-native-pell-rich-editor";
+import { useRoute } from '@react-navigation/native';
 const Form1 = (props) => {
-  var fileReader=new FileReader();
   const db=firestore();
+  const route=useRoute();
   const [selectedFile,setSelectedFile]=useState({});
   const [fileResponse,setFileResponse]=useState([]);
   const [path,setPath]=useState('');
-  //const richText = useRef();
+  const {jobId}=route.params;
+  console.log(jobId);
   const handleFileUpload=async()=>{
     try{
       const result=await DocumentPicker.pick({type:[DocumentPicker.types.doc,DocumentPicker.types.docx],copyTo:'cachesDirectory'})
@@ -38,9 +39,7 @@ const Form1 = (props) => {
   }
 
 };
-const handleEdit=(path)=>{
-console.log('pressed');
-};
+
 const handlePreview=async()=>{
   await FileViewer.open(path);
 };
@@ -60,13 +59,11 @@ const handlePreview=async()=>{
           yoe:values.yoe,
           message:values.message,
           fileUrl:'',
-          payID:'',
         };
         const userDocRef=db.collection('users').doc(user.uid);
-        await userDocRef.set(userData);
+        await userDocRef.update(userData);
         if(selectedFile)
         {
-          
           console.log(selectedFile[0].name);
           const fileRef=storage().ref(`/userFiles/${user.uid}/${selectedFile[0].name}`);
           //const fileRef=storage().ref('${selectedFile[0].name}');
@@ -79,12 +76,12 @@ const handlePreview=async()=>{
           console.log(fileUrl);
           await userDocRef.update({"fileUrl":fileUrl});
           setSelectedFile(null);
+          const recDocRef=db.collection('recruit').doc(jobId);
+          recDocRef.update({"appllicants":firebase.firestore.FieldValue.arrayUnion(user.uid)})
         }
         
         Alert.alert('Success','Form data submitted')
-
-        
-      }
+      }   
       else
       {
         Alert.alert('Error','User not logged in');
@@ -229,7 +226,8 @@ const handlePreview=async()=>{
             onChangeText={handleChange('message')}
                 onBlur={handleBlur('message')}
                 value={values.message}
-                style={{paddingBottom:70,marginBottom:20}}
+                style={{paddingBottom:10,marginBottom:20}}
+            multiline={true}
         />
         {errors.message && touched.message && <Text style={styles.errorMessage}>{errors.message}</Text>}
 
@@ -242,7 +240,6 @@ const handlePreview=async()=>{
 
         <Button mode='outlined' onPress={handleFileUpload}style={{marginBottom:20,}}>Upload Resume*</Button>
         {/* {errors.fileUrl && touched.fileUrl && <Text style={styles.errorMessage}>{errors.fileUrl}</Text>} */}
-        <Button mode='outlined' style={{marginBottom:20,}} onPress={()=>handleEdit(path)}>Edit Resume</Button>
         <Button mode='outlined' style={{marginBottom:20,}} onPress={handlePreview}>Preview Resume</Button>
 
         <Button mode='contained' onPress={handleSubmit} disabled={Object.keys(errors).length !== 0} style={{marginBottom:20}}>
