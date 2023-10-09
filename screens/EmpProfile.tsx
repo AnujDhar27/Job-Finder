@@ -42,7 +42,7 @@ const EmpProfile = (props) => {
           if(documentSnapshot.data().uiTheme==='light')
           setThemes("light");
           if(documentSnapshot.data().uiTheme==='dark')
-          setThemes("light");
+          setThemes("dark");
         }
         
       })

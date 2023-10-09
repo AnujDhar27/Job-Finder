@@ -25,6 +25,7 @@ const Applications= (props) => {
           .doc(user.uid)
           .get()
           .then(documentSnapshot=>{
+            if(documentSnapshot.data().appllicants)
             setappl(documentSnapshot.data().appllicants);
           })
         },[])
